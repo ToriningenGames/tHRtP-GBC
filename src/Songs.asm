@@ -2,9 +2,11 @@
 ;See game engine file for formats.
 
 
-.SECTION "song" FREE
-Song:
- .incbin "Song.mcs"
+.SECTION "songs" FREE
+SongTitle:
+ .incbin "1_A_Sacred_Lot.mcs"
+SongTest:
+ .incbin "2_Shrine_of_the_Wind.mcs"
 .ENDS
 
 .SECTION "notepitches" FREE

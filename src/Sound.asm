@@ -1,7 +1,5 @@
 ;Sound player 5.0
 
-.DEFINE VISUALS     ;Enables code providing data to the graphical side
-
 .define channelonebase          $CE04
 .define channeltwobase          $CE36
 .define channelthreebase        $CE68
@@ -601,11 +599,6 @@ _Tone:
 ;Tone (Channel 3)
 ;Load in a waveform from the table
 _Tone3:
-.IFDEF VISUALS
-  LD A,B        ;These four bytes push out wave information for the visual
-  LDH ($A3),A   ;They are free to delete, should you not need visuals
-  XOR A         ;...or need $FFA3...
-.ENDIF
   ;XOR A     ;Directive alreay has high bit unset
   LDH (C),A     ;Turn off channel so we can change wave
   SWAP B

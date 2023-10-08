@@ -1,0 +1,98 @@
+# A Sacred lot
+# Composer: ZUN
+# Arranger: Toriningen
+# Comments: The bass is all paired intervals, so Channel 3 gets it with some snazzy instruments. Channel 1 gets the lead for no particular reason. It also supplements Channel 2 with the rhythm when it isn't doing much. Stripping the hi-hat from the drums makes it almost single-instrument; dealing with the hi-hat/snare combos in the beginning makes this song well amenable to a 4-channel system. Nice and easy.
+# It's also nice that most of this song is repeating phrases. The midway key change is less nice, but it's a commonality amongst most of ZUN's works. I can deal with it.
+
+# Timings
+X0 ^0 T150 V$75 H%01011111
+[:
+    R1
+]0
+
+# Lead
+X1 ^0 T150 V$37 I2 O4 H S
+R1.2
+[: ^16
+    [1[2]0:1
+        
+        DEDD >A<GF G >A<GF EFEDD
+     :2 DFADEFE>A<GFEEFEDA
+    ]4
+    I3 V$70
+    [2:2
+        D2E2F1
+        [1:1 E2G2F1 ]1
+        E2G2C1
+    ]1
+    >A2<G2 V$37 I2
+    [1[2]0:1
+        G+E-F+E-F  E-
+     :2 E-F+B-E-F+F F G+ F+ F+F+F F+F>C+<B-
+        F+F F+E-G+F+F+G+>B-<G+
+    ]5
+    O5 V$A6 I0
+    [1:1 ^8
+        [3[2]0:3
+            C+E->B-<FF+R
+         :2 B-E-F F+FE-G+F+FE-
+        ]1 B-FF+G+>B-<R
+        B-E-F
+        [3[2]0:3
+            F+F+FG+>B-RB-<G+F+
+         :2 F+FE-B-G+F+F
+        ]1 E-E-B-FF+R
+    ]1 ^16 V$37 I2 O4 G+E-F+E-F  E-
+    [1:1
+        DFAD E FE>A<G FEEFEDA
+        DEDD>A<GF G>A<GFEFEDD
+    ]2
+]0
+
+# Rhythm
+X2 ^0 T150 V$97 I2 O4 H
+^16
+D>A<DG F ED>A<G FECGF>CA<
+D E FD>A<GF G>A<DGDFD ED
+[0:0
+    [1:1
+        E>A<DGFED GFEFCGF>CA<
+        F EFAGFEF>A<DGDFD ED
+    ]12
+    [1:1
+        F>B-<E-G+ F  F+E->B-<G+ F F C+G+F+E->B-<
+        E-F  E-B->B-<G+F  F+>B-<E-F+F F+F E- E-
+    ]13
+    [1:1
+        E>A<DGFED GFEFCGF>CA<
+        F EFAGFEF>A<DGDFD ED
+    ]2
+]0
+
+# Bass
+X3 ^0 T150 V$FF O3 H
+[: ^1
+    R.4
+    [1:1 I.7
+        D C B-C I.8 D I.7 C F B-2 C2
+    ]2
+    R.4 > I.5
+    E-.2I.6B.2C+.2I.5E-.2< I.7
+    [1:1
+        E-C+BC+I.8E-I.7C+F+B2C+2
+    ]1
+    R.4
+]0
+
+# Drums
+X4 ^0 T150 O2 H
+R2.7
+[:
+    [1:1 D32 ]15
+    [1:1 E1 ]6
+    E2 R8 A16 A16 B16 B16 A16 A16
+    [1:1
+        A8 B8 A8 B16 A16 A16 B16 B8 A8 B16 B16
+    ]43
+    [1:1 A4 ]29
+]0

@@ -1,0 +1,85 @@
+# Shrine of the Wind
+# Composer: ZUN
+# Arranger: Toriningen
+# Comments: This song showed up once, then never again. This and the title song are the perfect two to get the sound test rolling with.
+# Anyways, the song is a straightforward 4 parter. The bass is all the same interval but at many octaves, so we sub in a square on Channel 2.
+# The melody goes through a couple different sounds: there's a single pitch at the beginning, but short and sharp hits are important, so we give it to Channel 1. For the final part, it's more guitar-like with long notes, so we switch to a sharp tone with full sustain.
+# The rhythm channel is a doozy. Parts 1 and 2 are straightforward, though polyphonic. We hand it to Channel 3, but don't bother with the polyphony. For part 3, though, it's super high; only Channel 3 can reach without horrific tuning disasters. Hence, this line gets Channel 3 priority. It gets to keep Channel 3 for part 4; lucky it.
+# Drums mostly work out, only using bass, snare, and closed hi-hat... except part 4. For the pile of hats that start the measure, we sub in a crash and carry on the measure as normal.
+
+@0 T134
+
+X0 @0 ^0
+H%11001011 V$7E R4
+[:
+    H%11001011 V$7E R1.16
+    H%10111101 R1.18
+    V$FF H$FF R1.8
+]0
+
+# Melody
+X1 @0 H0 S0 I0 ^0
+[: O5 V$F2
+    ^8
+    CB- [: C32 ]7 E-F   [: G32 ]7 >B-C< [: G32 ]15 G4
+    FE- [: F32 ]7 F>B-< [: G32 ]7  E-F  [: G32 ]15 G4
+    CB- [: C32 ]7 E-F   [: G32 ]7 >B-C< [: G32 ]15 G4
+    FE- [: F32 ]7 F>B-< [: G32 ]7 E-D16E-32D32 [: C32 ]15 C4
+    # Part 2
+    CD >A2<F4DFD2>A2<D2F4DFD4G4>A2<D2F4DF>A2D2DAA4.3<G>AA4<FED16E32D32C
+    # Part 3
+    V$D0 I1 ^8
+    [1:1 D.3CD.2FG>A.3CA.2C.2DAA4.3<G>AA.2<FED16E32D32C ]1
+    [1:1 D1.3 E2C4F4 ]1 F4.7 E4
+    [1 [2]0 ^8 :1
+        C16D32C32B-
+    :2  C.3B-C.2E-FG.3>B-<G.2>B-.2C<GG4.3FGG.2E-D
+    ]1
+]0
+
+# Bass
+X2 @0 H0 I2 ^0
+R4
+[: O5 ^2 V$A0
+    CB-<A-.GA- G.> CB-<A-.GA- > ^1 CDCB- CDCB-C <
+    V$C0 [1:1 DCB-C ]3 D.2
+    V$E0 [1:1 CB-<A->B- ]1
+]0
+
+# Rhythm
+X3 @0 ^0
+R4
+[: ^8 I2.2 O3 V$FF
+    # Part 1
+    CG>C<GB-F>B-<F<A->E-A-E-<A->E-A-E-<G>DGD<A->E-A-E-<G>DGDB>DCB<CG>C<GB-F
+    >B-<F<A->E-A-E-<A->E-A-E-<G>DGD<A->E-A-E-CG>C<GCG>C<G
+    # Part 2
+    R4 D>ADA<D>A<CG>C<GCG>C<G>B-<FB-FCG>C<GCG>C<GCG
+    D->EDD-<D>ADA<D>A<CG>C<GCG>C<G>B-<FB-FCG>C<GCG>C<GCGD->E
+    # Part 3
+    I2.9 ^16 V$7F
+    [2:2
+        [1:1 O6 A<D>A<DADA<D ]5
+        >A<D>A<DAEDE>AA<DDAEDC
+        [1:1 O6 AA<DDAA<DD ]5
+        >AA<DDAEDC>AA<DDAEDC
+    ]1
+    # Part 4
+    >A4.7 R4 ^8 V$7F
+    [1:1 O4 C64.21R64.3B-C.2E-FG64.21R64.3>B-<G.2>B-.2C<GG4.3FGG.2E-DC16D32C32B- ]1
+]0
+
+# Drums
+X4 @0 ^0
+R4 O2
+[: ^8
+    AA
+    [1:1 BAAA ]14
+    BA ^4 EABA
+    [1:1 AABA ]2
+    ^8 AA
+    [1:1 BAAA ]38
+    BAC8.13 ^32 A16A16BBAAB16B16A8A8 ^8
+    [1:1 EAAA ]14
+    EA
+]0

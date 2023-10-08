@@ -1,39 +1,44 @@
-DEMOSONG=1_A_Sacred_Lot.mml
 MML=tools/MML6
 
-OBJDIR=obj
-SRCDIR=src
-LIBDIR=lib
-BINDIR=bin
-SONGDIR=songs
-LIB=$(addprefix $(LIBDIR)/,Sound.lib Voicelist.lib playerSongs.lib)
-OBJ=$(addprefix $(OBJDIR)/,musPlayer.obj)
-LINK=$(OBJDIR)/Link.link
-SONGTARGET=$(OBJDIR)/Song.mcs
+LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib)
+OBJ=$(addprefix obj/,main.obj)
+LINK=obj/Link.link
+INCS=-I inc -I res -I src
 
-$(BINDIR)/musPlayer.gb : $(LINK) $(SONGTARGET) $(OBJ) $(LIB) | $(OBJDIR) $(LIBDIR) $(BINDIR)
+bin/musPlayer.gb : $(LINK) $(OBJ) $(LIB1) | bin
 	wlalink -v -S -r $(LINK) $@
 
-$(LINK) : Makefile | $(OBJDIR) $(LIBDIR)
+$(LINK) : Makefile | obj lib
 	$(file > $(LINK),[objects])
 	$(foreach I, $(OBJ),$(file >> $(LINK), $(I)))
 	$(file >> $(LINK),[libraries])
-	$(foreach I, $(LIB),$(file >> $(LINK),BANK 0 SLOT 0 $(I)))
+	$(foreach I, $(LIB1),$(file >> $(LINK),BANK 1 SLOT 1 $(I)))
 
-$(OBJDIR)/%.obj : $(SRCDIR)/%.asm | $(OBJDIR)
-	wla-gb -v -I $(OBJDIR) -I res -o $@ $<
+obj/%.obj : src/%.asm dep/%.d | obj dep
+	wla-gb -M $(INCS) $< > $(word 2,$^)
+	wla-gb -v $(INCS) -o $@ $<
 
-$(LIBDIR)/playerSongs.lib : $(SONGTARGET)
-$(LIBDIR)/%.lib : $(SRCDIR)/%.asm | $(LIBDIR)
-	wla-gb -v -I $(OBJDIR) -I res -l $@ $<
+lib/%.lib : src/%.asm dep/%.d | lib dep
+	wla-gb -M $(INCS) -l $@ $< > $(word 2,$^)
+	wla-gb -v $(INCS) -l $@ $<
 
-$(SONGTARGET) : $(SONGDIR)/$(DEMOSONG) $(MML) | $(OBJDIR)
+# This target for when the file doesn't exist, nor the dep
+# The generated depfile is wrong on the source location
+# So we need to tell make how to make it
+%.mcs : res/%.mcs
+	true
+
+res/%.mcs : snd/%.mml $(MML) | res
 	$(MML) -i=$< -o=$@ -t=gb
 
-$(OBJDIR) $(LIBDIR) $(BINDIR):
+obj lib bin res dep:
 	mkdir $@
 
 clean :
-	$(RM) $(OBJDIR) $(LIBDIR) $(BINDIR)
+	rm -rf obj lib bin dep res/*.mcs
 
-.PHONY: clean demo
+DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d)
+$(DEPFILES):
+include $(wildcard $(DEPFILES))
+
+.PHONY: clean
