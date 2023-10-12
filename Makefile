@@ -1,11 +1,11 @@
 MML=tools/MML6
 
-LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib)
-OBJ=$(addprefix obj/,main.obj)
+LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib)
+OBJ=$(addprefix obj/,main.obj vBlank.obj)
 LINK=obj/Link.link
 INCS=-I inc -I res -I src
 
-bin/musPlayer.gb : $(LINK) $(OBJ) $(LIB1) | bin
+bin/reiiden.gb : $(LINK) $(OBJ) $(LIB1) | bin
 	wlalink -v -S -r $(LINK) $@
 
 $(LINK) : Makefile | obj lib
@@ -15,7 +15,7 @@ $(LINK) : Makefile | obj lib
 	$(foreach I, $(LIB1),$(file >> $(LINK),BANK 1 SLOT 1 $(I)))
 
 obj/%.obj : src/%.asm dep/%.d | obj dep
-	wla-gb -M $(INCS) $< > $(word 2,$^)
+	wla-gb -M $(INCS) -o $@ $< > $(word 2,$^)
 	wla-gb -v $(INCS) -o $@ $<
 
 lib/%.lib : src/%.asm dep/%.d | lib dep
@@ -35,10 +35,10 @@ obj lib bin res dep:
 	mkdir $@
 
 clean :
-	rm -rf obj lib bin dep res/*.mcs
+	rm -rf obj lib bin res/*.mcs
 
 DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d)
 $(DEPFILES):
 include $(wildcard $(DEPFILES))
 
-.PHONY: clean
+.PHONY: clean all

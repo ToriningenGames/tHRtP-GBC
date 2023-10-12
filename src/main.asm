@@ -1,11 +1,14 @@
 .INCLUDE map.i
+.INCLUDE regs.i
 
 .EMPTYFILL $FF
 
 .BANK 0 SLOT 0
 .ORG $00
 ;RST $00
-  RET
+  POP HL
+  POP AF
+  RETI
 .ORG $08
 ;RST $08
   RET
@@ -32,8 +35,7 @@
   JP HL
 .ORG $38    ;HCF
   DI
-  HALT
-  HALT
+  LD B,B
 .ORG $40
 ;vBlank
   PUSH HL
@@ -43,7 +45,11 @@
   JP vBlank
 .ORG $48
 ;LCD
-  RETI
+  PUSH AF
+  PUSH HL
+  LD HL,LCDVecTab
+  LDH A,(STAT)
+  JR lcdintr
 .ORG $50
 ;Timer
   RETI
@@ -53,6 +59,18 @@
 .ORG $60
 ;Joypad
   RETI
+
+.SECTION "Interrupts" FORCE
+lcdintr:
+  AND %00000111
+  ADD A
+  ADD L
+  LD L,A
+  LDI A,(HL)
+  LD H,(HL)
+  LD L,A
+  JP HL
+.ENDS
 
 .ORG $0100
 .SECTION "Header" SIZE $4D FORCE
@@ -67,11 +85,11 @@
  .db "TH1 REIIDEN"
 ;     123456789AB
 ;Manufacturer code
- .db "TRNG"
+ .db $00,"TSA"
 ;Color Game Boy flag
  .db $C0
 ;New Licensee Code
- .db "SA"
+ .db "TN"
 ;Super Game Boy flag
  .db $00
 ;Cartridge type
@@ -94,34 +112,52 @@
 
 .SECTION "Init" FREE
 Start:
+;System check
+  CP $11
+  JR z,++
+  ;Not GBC; annotate and error later
+  LD A,$FF
+  JR +
+++
+  LD A,$01
+  AND B
+  LD A,$80
+  JR nz,+
+  ;Use GBC palettes
+  XOR A
++
+  LD (System),A
+;Fade to black
+;Can't rely on vBlank interrupt yet; use LCD
+  XOR A
+  LD HL,LCDVecTab+2
+  LDI (HL),A
+  LDI (HL),A
+  LD A,%00010000
+  LDH (STAT),A
+  LD A,%00000010
+  LDH (IE),A
+  EI
+;Fade loop
+-
+  LD A,$80
+  LDH (BGPI),A
+  LDH A,(BGPD)
+  SUB $21
+  LDH (BGPD),A
+  LDH A,(BGPD)
+  SBC $04
+  LDH (BGPD),A
+  HALT
+  CP $00
+  JR nz,-
+;Init
+;Amusement Makers logo?
+;Toriningen logo?
+;Run title screen
 ;DEBUG
-  LD B,B
-  LD A,$0A
-  LD ($0000),A
-  LD A,$00
-  LD ($A000),A
-  LD A,($A000)
-  LD A,($A800)
-  LD A,$55
-  LD ($A000),A
-  LD A,($A000)
-  LD A,($A800)
-  LD ($0000),A
+++
 -
   HALT
-  HALT
-  NOP
   JR -
-.ENDS
-
-.SECTION "vBlank" FREE
-;vBlank
-vBlank:
-;Sound
-  CALL PlayTick
-  POP AF
-  POP BC
-  POP DE
-  POP HL
-  RETI
 .ENDS
