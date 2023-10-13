@@ -178,14 +178,32 @@ Start:
   DEC L
   JR nz,-
   LD (HL),A
-;Disable sound (for now)
-;TODO: Play song here instead
-  LD (musicglobalbase+1),A
 ;Enable interrupts!
   LDH (IF),A
   LD A,%00000001
   LDH (IE),A
   EI
+;Begin music
+  LD A,<Channel1Pitch
+  LD (channelonebase+$2A),A
+  LD A,>Channel1Pitch
+  LD (channelonebase+$2B),A
+  LD A,<Channel2Pitch
+  LD (channeltwobase+$2A),A
+  LD A,>Channel2Pitch
+  LD (channeltwobase+$2B),A
+  LD A,<Channel3Pitch
+  LD (channelthreebase+$2A),A
+  LD A,>Channel3Pitch
+  LD (channelthreebase+$2B),A
+  LD A,<Channel4Pitch
+  LD (channelfourbase+$2A),A
+  LD A,>Channel4Pitch
+  LD (channelfourbase+$2B),A
+  LD A,%11110011
+  LD (musicglobalbase+1),A
+  LD BC,SongTitle
+  CALL MusicLoad
 ;Amusement Makers logo?
 ;Toriningen logo?
 ;Run title screen
