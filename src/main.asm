@@ -42,7 +42,7 @@
   PUSH DE
   PUSH BC
   PUSH AF
-  JP vBlank
+  JP $FF00|OAMStart   ;vBlank   ;Tail call
 .ORG $48
 ;LCD
   PUSH AF
@@ -152,6 +152,40 @@ Start:
   CP $00
   JR nz,-
 ;Init
+;Get vBlank up and running
+;OAM routine
+  LD HL,OAMRoutine
+  LD B,OAMSize
+  LD C,OAMStart
+-
+  LDI A,(HL)
+  LDH (C),A
+  INC C
+  DEC B
+  JR nz,-
+;Block transfers
+  LD A,$FF
+  LD (XferQueue),A
+;Palette transfers
+  LD (PaletteUpdates),A
+;Bank byte
+  XOR A
+  LD (CurrROMBank),A
+;OAM Shadow
+  LD HL,OAMData+$9F
+-
+  LD (HL),A
+  DEC L
+  JR nz,-
+  LD (HL),A
+;Disable sound (for now)
+;TODO: Play song here instead
+  LD (musicglobalbase+1),A
+;Enable interrupts!
+  LDH (IF),A
+  LD A,%00000001
+  LDH (IE),A
+  EI
 ;Amusement Makers logo?
 ;Toriningen logo?
 ;Run title screen
@@ -160,4 +194,17 @@ Start:
 -
   HALT
   JR -
+.ENDS
+
+.SECTION "OAM Routine" FREE
+OAMRoutine:
+  LD A,>OAMData
+  LDH (DMA),A
+  LD A,40
+-
+  DEC A
+  JR nz,-
+  JP OAMEnd
+
+.DEFINE OAMSize 12
 .ENDS

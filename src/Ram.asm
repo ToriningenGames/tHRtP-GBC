@@ -3,16 +3,17 @@
 LCDVecTab       DSW     $08
 System          DB
 Buttons         DB
+CurrROMBank     DB
 .ENDE
+
+.DEFINE OAMData $C100 EXPORT
+.DEFINE XferQueue $C1A0 EXPORT
+
+.DEFINE PaletteUpdates $C200 EXPORT
 
 ; Bank 0 RAM registers
-.ENUM $D000 EXPORT
-.ENDE
 
 ; Cartridge RAM
-.ENUM $A000 EXPORT
-.ENDE
 
-;HRAM
-.ENUM $80 EXPORT
-.ENDE
+; HRAM
+.DEFINE OAMStart $80 EXPORT
