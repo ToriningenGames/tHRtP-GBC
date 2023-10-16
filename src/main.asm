@@ -9,12 +9,30 @@
   POP HL
   POP AF
   RETI
-.ORG $08
+  
 ;RST $08
-  RET
+;Swap ROM banks
+;A = new bank
+;Returns
+;A = old bank
+;Nothing destroyed
+.ORG $08
+  PUSH BC
+    LD B,A
+    LD A,(CurrROMBank)
+    LD C,A
+    JR swaprombank
+;Swap RAM banks
+;A = new bank
+;Returns
+;A = old bank
+;Nothing destroyed
 .ORG $10
-;RST $10
-  RET
+  PUSH BC
+    LD B,A
+    LD A,(CurrRAMBank)
+    LD C,A
+    JR swaprambank
 .ORG $18
 ;RST $18
   RET
@@ -70,6 +88,23 @@ lcdintr:
   LD H,(HL)
   LD L,A
   JP HL
+.ENDS
+
+.SECTION "Bankswitch" FORCE
+swaprombank:
+    LD A,B
+    LD (CurrROMBank),A
+    LD ($2000),A
+    LD A,C
+  POP BC
+  RET
+swaprambank:
+    LD A,B
+    LD (CurrRAMBank),A
+    LDH (WBK),A
+    LD A,C
+  POP BC
+  RET
 .ENDS
 
 .ORG $0100
@@ -163,49 +198,126 @@ Start:
   INC C
   DEC B
   JR nz,-
-;Block transfers
+;Clear vRAM data area
+  LD HL,OAMData
   LD A,$FF
-  LD (XferQueue),A
-;Palette transfers
-  LD (PaletteUpdates),A
+  LD C,2
+-
+  LDI (HL),A
+  DEC B
+  JR nz,-
+  DEC C
+  JR nz,-
 ;Bank byte
   XOR A
   LD (CurrROMBank),A
-;OAM Shadow
-  LD HL,OAMData+$9F
--
-  LD (HL),A
-  DEC L
-  JR nz,-
-  LD (HL),A
+  LD (CurrRAMBank),A
+  LD ($2000),A
+  LDH (WBK),A
 ;Enable interrupts!
   LDH (IF),A
   LD A,%00000001
   LDH (IE),A
   EI
+;Amusement Makers logo?
+;Toriningen logo?
 ;Begin music
+  LD HL,channelonebase+$2A
   LD A,<Channel1Pitch
-  LD (channelonebase+$2A),A
-  LD A,>Channel1Pitch
-  LD (channelonebase+$2B),A
+  LDI (HL),A
+  LD (HL),>Channel1Pitch
+  LD HL,channeltwobase+$2A
   LD A,<Channel2Pitch
-  LD (channeltwobase+$2A),A
-  LD A,>Channel2Pitch
-  LD (channeltwobase+$2B),A
+  LDI (HL),A
+  LD (HL),>Channel2Pitch
+  LD HL,channelthreebase+$2A
   LD A,<Channel3Pitch
-  LD (channelthreebase+$2A),A
-  LD A,>Channel3Pitch
-  LD (channelthreebase+$2B),A
+  LDI (HL),A
+  LD (HL),>Channel3Pitch
+  LD HL,channelfourbase+$2A
   LD A,<Channel4Pitch
-  LD (channelfourbase+$2A),A
-  LD A,>Channel4Pitch
-  LD (channelfourbase+$2B),A
+  LDI (HL),A
+  LD (HL),>Channel4Pitch
   LD A,%11110011
   LD (musicglobalbase+1),A
   LD BC,SongTitle
   CALL MusicLoad
-;Amusement Makers logo?
-;Toriningen logo?
+;Load some tiles
+;Thankfully the screen is already black, so we don't care what we overwrite
+;It's the very beginning, so use a whole bank; why not?
+  LD A,2
+  RST $08
+  LD HL,InitTemp
+  PUSH HL
+    LD HL,TileDataTitle
+    LD DE,$D000
+    CALL ExtractSpec
+  POP BC
+  LD L,15
+-
+  PUSH HL
+  PUSH BC
+    CALL ExtractRestoreSP
+  POP BC
+  POP HL
+  DEC L
+  JR nz,-
+  PUSH BC
+    LD A,$7F  ;Transfer size: $800
+    LD DE,$8000
+    LD HL,$D000
+    CALL AddTransfer
+    HALT
+    LD A,$7F
+    LD DE,$8800
+    LD HL,$D800
+    CALL AddTransfer
+    HALT
+  ;Copy the top half to the bottom of the bank
+  ;so we can decompress the rest
+    LD HL,$D000
+    LD DE,$D800
+-
+    LD A,(DE)
+    LDI (HL),A
+    INC E
+    JR nz,-
+    INC D
+    LD A,$E0
+    CP D
+    JR nz,-
+  POP HL
+  PUSH HL
+  ;Tweak the extract structure to see the new data location
+    INC HL
+    LD A,(HL)
+    BIT 7,A
+    JR z,+
+    SUB $08
+    LD (HL),A
++
+    INC HL
+    INC HL
+    INC HL
+    INC HL
+    LD A,(HL)
+    SUB $08
+    LD (HL),A
+  POP BC
+  LD L,8
+-
+  PUSH HL
+  PUSH BC
+    CALL ExtractRestoreSP
+  POP BC
+  POP HL
+  DEC L
+  JR nz,-
+  LD A,$7F
+  LD DE,$9000
+  LD HL,$D800
+  CALL AddTransfer
+  HALT
 ;Run title screen
 ;DEBUG
 ++

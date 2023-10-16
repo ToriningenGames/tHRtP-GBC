@@ -1,7 +1,8 @@
 tools/*
 obj/*
 bin/*
-res/*
+*.mcs
+*.lzt
 lib/*
 midi/*
 *~

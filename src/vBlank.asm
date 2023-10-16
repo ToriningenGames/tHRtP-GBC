@@ -5,22 +5,15 @@
 .SECTION "vBlank" FREE
 ;vBlank
 vBlank:
-.DEFINE vbTime       4560
+;Total vBlank time:  4560
 ;Constant cost:       912
-.DEFINE vbCost        912
 ;OAM additional cost:   0
 ;Transfer init cost:  168
-.DEFINE vbTrICost     168
-  ;Cost per byte:       2
-.DEFINE vbTrBCost       2
+  ;Cost per 16 bytes:  32
 ;BkgPal change cost:   92
-.DEFINE vbBPICost      92
   ;Cost per color:     48
-.DEFINE vbBPBCost      48
 ;ObjPal change cost:   96
-.DEFINE vbOPICost      96
   ;Cost per color:     48
-.DEFINE vbOPBCost      48
 ;OAM First (Tail call)
 OAMEnd:
 ;Tile Check
@@ -84,6 +77,8 @@ OAMEnd:
   BIT 0,A
   JR z,--
 ;CRITICAL PORTION END
+  LD HL,vBlankFree
+  LD (HL),228   ;vBlank free time, divided by 16
 ;Button Check
   LD C,JOYP
   LD A,%00100000
@@ -103,10 +98,73 @@ OAMEnd:
   OR B
   LD (Buttons),A
 ;Sound Check
+  LD A,1
+  LD ($2000),A
   CALL PlayTick
+  LD A,(CurrROMBank)
+  LD ($2000),A
   POP AF
   POP BC
   POP DE
   POP HL
   RETI
+.ENDS
+
+.SECTION "vBlank Interface" FREE
+;Add this transfer to the queue, if there's room
+;A = Transfer size
+;DE = Dest. Low bit selects vRAM bank
+;HL = Source. Low bit selects wRAM bank
+;Carry clear if transfer failed; registers unchanged
+;Carry set if transfer queued; A, BC, HL destroyed
+AddTransfer:
+  ;Get requested transfer size
+  PUSH HL
+    PUSH AF
+      ADD A   ;2 timespaces per 16 bytes
+      ADD 11  ;Transfer init cost
+    ;Compare for timespace
+      LD HL,vBlankFree
+      CPL
+      INC A
+      ADD (HL)
+      JR nc,+
+    ;Reserve timespace
+      LD (HL),A
+    ;Add this transfer to tail
+      LD HL,XferQueue-5
+-
+      INC L
+      INC L
+      INC L
+      INC L
+      INC L
+      LD A,(HL)
+      INC A
+      JR nz,-
+    POP AF
+  POP BC
+  LDI (HL),A
+  LD (HL),C
+  INC L
+  LD (HL),B
+  INC L
+  LD (HL),E
+  INC L
+  LD (HL),D
+  LD A,1
+  AND L
+  ;If this was an odd index transfer, return 1 timespace
+  SCF   ;Indicate success
+  RET z
+  LD HL,vBlankFree
+  INC (HL)
+  RET
++
+  POP AF
+  POP HL
+  RET
+;Add this palette change to the queue, if there's room
+  ;Overwrite overlaps
+  ;Consolidate palette transfers if they're contiguous
 .ENDS
