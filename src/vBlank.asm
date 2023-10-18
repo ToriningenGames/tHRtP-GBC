@@ -114,7 +114,7 @@ OAMEnd:
 ;Add this transfer to the queue, if there's room
 ;A = Transfer size
 ;DE = Dest. Low bit selects vRAM bank
-;HL = Source. Low bit selects wRAM bank
+;HL = Source. Low bit selects ROM bank
 ;Carry clear if transfer failed; registers unchanged
 ;Carry set if transfer queued; A, BC, HL destroyed
 AddTransfer:

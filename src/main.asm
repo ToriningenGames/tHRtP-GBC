@@ -319,6 +319,16 @@ Start:
   CALL AddTransfer
   HALT
 ;Run title screen
+  LD A,$23
+  LD DE,$9800
+  LD HL,MapTest+2
+  CALL AddTransfer
+  LD A,$23
+  LD DE,$9801
+  LD HL,MapTest+576+2
+  CALL AddTransfer
+  LD A,%10000000
+  LDH (LCDC),A
 ;DEBUG
 ++
 -

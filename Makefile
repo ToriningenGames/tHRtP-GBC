@@ -1,8 +1,9 @@
 MML=tools/MML6
 LZ=tools/LZify
 LZSPEC=tools/specfile.txt
+MAPCONV=tools/tiledmapconvert
 
-LIB2=$(addprefix lib/,Extract.lib Tiledata.lib)
+LIB2=$(addprefix lib/,Extract.lib Tiledata.lib Tilemaps.lib)
 LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib)
 OBJ=$(addprefix obj/,main.obj vBlank.obj)
 LINK=obj/Link.link
@@ -35,12 +36,22 @@ lib/%.lib : src/%.asm dep/%.d | lib dep
 	true
 %.lzt : res/%.lzt
 	true
+%.lzm : res/%.lzm
+	true
+%.gbm : res/%.gbm
+	true
 
 res/%.mcs : snd/%.mml $(MML) | res
 	$(MML) -i=$< -o=$@ -t=gb
 
 res/%.lzt : res/%.tile $(LZSPEC)
 	$(LZ) LZ77 $(LZSPEC) $< $@
+
+res/%.lzm : res/%.gbm $(LZSPEC)
+	$(LZ) LZ77 $(LZSPEC) $< $@
+
+res/%.gbm : res/%.tmj
+	$(MAPCONV) $< $@
 
 obj lib bin res dep:
 	mkdir $@
