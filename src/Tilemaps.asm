@@ -1,5 +1,6 @@
-.SECTION "Maps" FREE ALIGN 16
-MapTest:
-.incbin Title.lzm SKIP 1
-
+.SECTION "Maps" FREE
+MapTitle:
+.incbin Title.lzm
+MapTitlePal:
+.dw $0000,$000A,$001F,$7FFF
 .ENDS

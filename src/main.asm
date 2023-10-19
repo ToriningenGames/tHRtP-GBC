@@ -19,8 +19,9 @@
 .ORG $08
   PUSH BC
     LD B,A
-    LD A,(CurrROMBank)
+    LDH A,(CurrROMBank)
     LD C,A
+    LD A,B
     JR swaprombank
 ;Swap RAM banks
 ;A = new bank
@@ -30,8 +31,9 @@
 .ORG $10
   PUSH BC
     LD B,A
-    LD A,(CurrRAMBank)
+    LDH A,(CurrRAMBank)
     LD C,A
+    LD A,B
     JR swaprambank
 .ORG $18
 ;RST $18
@@ -65,8 +67,8 @@
 ;LCD
   PUSH AF
   PUSH HL
-  LD HL,LCDVecTab
-  LDH A,(STAT)
+  LDH A,(LCDVec)
+  LD L,A
   JR lcdintr
 .ORG $50
 ;Timer
@@ -80,27 +82,20 @@
 
 .SECTION "Interrupts" FORCE
 lcdintr:
-  AND %00000111
-  ADD A
-  ADD L
-  LD L,A
-  LDI A,(HL)
-  LD H,(HL)
-  LD L,A
+  LDH A,(LCDVec+1)
+  LD H,A
   JP HL
 .ENDS
 
 .SECTION "Bankswitch" FORCE
 swaprombank:
-    LD A,B
-    LD (CurrROMBank),A
+    LDH (CurrROMBank),A
     LD ($2000),A
     LD A,C
   POP BC
   RET
 swaprambank:
-    LD A,B
-    LD (CurrRAMBank),A
+    LDH (CurrRAMBank),A
     LDH (WBK),A
     LD A,C
   POP BC
@@ -147,6 +142,7 @@ swaprambank:
 
 .SECTION "Init" FREE
 Start:
+  LD SP,StackTop+1
 ;System check
   CP $11
   JR z,++
@@ -161,11 +157,11 @@ Start:
   ;Use GBC palettes
   XOR A
 +
-  LD (System),A
+  LDH (System),A
 ;Fade to black
 ;Can't rely on vBlank interrupt yet; use LCD
   XOR A
-  LD HL,LCDVecTab+2
+  LD HL,$FF00|LCDVec
   LDI (HL),A
   LDI (HL),A
   LD A,%00010000
@@ -210,8 +206,8 @@ Start:
   JR nz,-
 ;Bank byte
   XOR A
-  LD (CurrROMBank),A
-  LD (CurrRAMBank),A
+  LDH (CurrROMBank),A
+  LDH (CurrRAMBank),A
   LD ($2000),A
   LDH (WBK),A
 ;Enable interrupts!
@@ -319,21 +315,129 @@ Start:
   CALL AddTransfer
   HALT
 ;Run title screen
+  LD A,4
+  LD C,0
+  LD HL,MapTitlePal
+  CALL AddPalette
+  ;1152 bytes of map data
+  LD HL,InitTemp
+  PUSH HL
+    LD HL,MapTitle
+    LD DE,MapTemp
+    CALL ExtractSpec
+    CALL ExtractRestoreSP
+    CALL ExtractRestoreSP
+    CALL ExtractRestoreSP
+    CALL ExtractRestoreSP
+  POP HL
   LD A,$23
   LD DE,$9800
-  LD HL,MapTest+2
+  LD HL,MapTemp
   CALL AddTransfer
   LD A,$23
   LD DE,$9801
-  LD HL,MapTest+576+2
+  LD HL,MapTemp+$240
   CALL AddTransfer
-  LD A,%10000000
+  ;Hide the title
+  LD A,%10011001
   LDH (LCDC),A
-;DEBUG
-++
+;Wait for song to kick in
+  LD DE,$0249
 -
   HALT
-  JR -
+  DEC E
+  JR nz,-
+  DEC D
+  JR nz,-
+;Do the line thing!
+  LD A,<LineThing
+  LDH (LCDVec),A
+  LD A,>LineThing
+  LDH (LCDVec+1),A
+  LD A,%01000000
+  LDH (STAT),A
+  LD A,%00000011
+  LDH (IE),A
+  LD C,$7B
+-
+  CALL Rand
+  AND $7F
+  LDH (LYC),A
+  HALT
+  DEC C
+  JR nz,-
+;Show the title
+  LD A,%10000000
+  LDH (LCDC),A
+  LDH (STAT),A
+  LD A,%00000001
+  LDH (IE),A
+;Run title loop
+  LD A,15
+  LDH (ModeTimer),A
+  JP TitleLoop
+
+LineThing:
+;Flash a line white
+-
+  LDH A,(STAT)
+  AND 3
+  JR nz,-
+  LD A,$80
+  LDH (BGPI),A
+  LD A,$FF
+  LDH (BGPD),A
+  LDH (BGPD),A
+;Wait a line
+-
+  LDH A,(STAT)
+  AND 3
+  JR z,-
+-
+  LDH A,(STAT)
+  AND 3
+  JR nz,-
+;Return color
+  LD A,$80
+  LDH (BGPI),A
+  XOR A
+  LDH (BGPD),A
+  LDH (BGPD),A
+  POP HL
+  POP AF
+  RETI
+.ENDS
+
+.SECTION "Title Loop" FREE ALIGN 16
+TitleText:
+.db $80,$80,$80,$80,$80,$80,$9A,10,11, 12, 13, 14, 15,$80,$80,$80
+TitleNoText:
+.db $80,$80,$80,$80,$80,$80,$9A, 7, 8,$80,$80,$80,$80,$80,$80,$80
+TitleLoop:
+  ;Check for buttons
+  ;...
+  ;Check for blink
+  LDH A,(ModeTimer)
+  DEC A
+  LDH (ModeTimer),A
+  JR nz,+
+  LD A,30
+  LDH (ModeTimer),A
+  ;Blink the text
+  LDH A,(ModeVar0)
+  INC A
+  LDH (ModeVar0),A
+  AND 1
+  LD HL,TitleText
+  JR z,++
+  LD HL,TitleNoText
+++
+  XOR A
+  LD DE,$99C0
+  CALL AddTransfer
++
+  HALT
+  JR TitleLoop
 .ENDS
 
 .SECTION "OAM Routine" FREE

@@ -1,12 +1,12 @@
 ;Sound player 5.0
 
-.define channelonebase          $CE04
-.define channeltwobase          $CE36
-.define channelthreebase        $CE68
-.define channelfourbase         $CE9A
-.define channelcontrolbase      $CECC
+.define channelonebase          $C004
+.define channeltwobase          $C036
+.define channelthreebase        $C068
+.define channelfourbase         $C09A
+.define channelcontrolbase      $C0CC
 .define channelsize $32
-.define musicglobalbase $CE00
+.define musicglobalbase $C000
 .export channelonebase
 .export channeltwobase
 .export channelthreebase

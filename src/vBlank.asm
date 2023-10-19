@@ -8,7 +8,7 @@ vBlank:
 ;Total vBlank time:  4560
 ;Constant cost:       912
 ;OAM additional cost:   0
-;Transfer init cost:  168
+;Transfer init cost:  156
   ;Cost per 16 bytes:  32
 ;BkgPal change cost:   92
   ;Cost per color:     48
@@ -28,7 +28,7 @@ OAMEnd:
   ;Valid transfer
   INC L
   LDI A,(HL)
-  LD ($2000),A  ;Set source bank
+  LDH (WBK),A   ;Set source bank
   LDH (HDMA2),A
   LDI A,(HL)
   LDH (HDMA1),A
@@ -45,9 +45,9 @@ OAMEnd:
   LD A,B
   INC A
   JR nz,-
-  ;Reset ROM bank
-  LD A,(CurrROMBank)
-  LD ($2000),A
+  ;Reset RAM bank
+  LDH A,(CurrRAMBank)
+  LDH (WBK),A
 ++
 ;Palette Check
   LD HL,PaletteUpdates
@@ -77,8 +77,8 @@ OAMEnd:
   BIT 0,A
   JR z,--
 ;CRITICAL PORTION END
-  LD HL,vBlankFree
-  LD (HL),228   ;vBlank free time, divided by 16
+  LD A,228       ;vBlank free time, divided by 16
+  LDH (vBlankFree),A
 ;Button Check
   LD C,JOYP
   LD A,%00100000
@@ -96,12 +96,12 @@ OAMEnd:
   AND $0F
   SWAP A
   OR B
-  LD (Buttons),A
+  LDH (Buttons),A
 ;Sound Check
   LD A,1
   LD ($2000),A
   CALL PlayTick
-  LD A,(CurrROMBank)
+  LDH A,(CurrROMBank)
   LD ($2000),A
   POP AF
   POP BC
@@ -114,7 +114,7 @@ OAMEnd:
 ;Add this transfer to the queue, if there's room
 ;A = Transfer size
 ;DE = Dest. Low bit selects vRAM bank
-;HL = Source. Low bit selects ROM bank
+;HL = Source. Low bit selects wRAM bank
 ;Carry clear if transfer failed; registers unchanged
 ;Carry set if transfer queued; A, BC, HL destroyed
 AddTransfer:
@@ -122,9 +122,9 @@ AddTransfer:
   PUSH HL
     PUSH AF
       ADD A   ;2 timespaces per 16 bytes
-      ADD 11  ;Transfer init cost
+      ADD 10  ;Transfer init cost
     ;Compare for timespace
-      LD HL,vBlankFree
+      LD HL,$FF00|vBlankFree
       CPL
       INC A
       ADD (HL)
@@ -154,17 +154,71 @@ AddTransfer:
   LD (HL),D
   LD A,1
   AND L
-  ;If this was an odd index transfer, return 1 timespace
   SCF   ;Indicate success
-  RET z
-  LD HL,vBlankFree
-  INC (HL)
   RET
 +
   POP AF
   POP HL
   RET
+
 ;Add this palette change to the queue, if there's room
-  ;Overwrite overlaps
-  ;Consolidate palette transfers if they're contiguous
+;A = Color count
+;C = Palette index. Objects are index+64
+;HL = Source
+;Carry clear if transfer failed; B, DE destroyed
+;Carry set if transfer queued; all destroyed
+AddPalette:
+  PUSH AF
+  PUSH HL
+    LD B,A  ;3 timespaces per color
+    ADD A
+    ADD B
+    ADD 6   ;Color init cost
+  ;Compare for timespace
+    LD HL,$FF00|vBlankFree
+    CPL
+    INC A
+    ADD (HL)
+    JR nc,+
+  ;Reserve timespace
+    LD (HL),A
+  ;Find a spot
+    LD DE,PaletteUpdates
+-
+    LD A,(DE)
+    INC A
+    JR z,++
+    INC E
+    LD A,(DE)
+    ADD A
+    INC A
+    ADD E
+    LD E,A
+    JR -
+++
+  ;Throw the transfer in
+    LD A,$80
+    OR C
+    LD (DE),A
+    INC E
+  POP HL
+  POP AF
+  LD (DE),A
+  INC E
+  ADD A
+  LD C,A
+-
+  LDI A,(HL)
+  LD (DE),A
+  INC E
+  DEC C
+  JR nz,-
+;Indicate success
+  SCF
+  RET
++
+  POP HL
+  POP AF
+  CCF
+  RET
 .ENDS

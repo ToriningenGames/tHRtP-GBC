@@ -5,7 +5,7 @@ MAPCONV=tools/tiledmapconvert
 
 LIB2=$(addprefix lib/,Extract.lib Tiledata.lib Tilemaps.lib)
 LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib)
-OBJ=$(addprefix obj/,main.obj vBlank.obj)
+OBJ=$(addprefix obj/,main.obj vBlank.obj Rand.obj)
 LINK=obj/Link.link
 INCS=-I inc -I res -I src
 
@@ -57,7 +57,7 @@ obj lib bin res dep:
 	mkdir $@
 
 clean :
-	rm -rf obj lib bin res/*.mcs
+	rm -rf obj lib bin res/*.mcs res/*.lzm res/*.lzt
 
 DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d) $(LIB2:lib/%.lib=dep/%.d)
 $(DEPFILES):
