@@ -7,7 +7,7 @@ LIB2=$(addprefix lib/,Extract.lib Tiledata.lib Tilemaps.lib)
 LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib)
 OBJ=$(addprefix obj/,main.obj vBlank.obj Rand.obj)
 LINK=obj/Link.link
-INCS=-I inc -I res -I src
+INCS=-I inc -I res -I tile -I src
 
 bin/reiiden.gb : $(LINK) $(OBJ) $(LIB1) $(LIB2) | bin
 	wlalink -v -S -r $(LINK) $@
@@ -44,20 +44,20 @@ lib/%.lib : src/%.asm dep/%.d | lib dep
 res/%.mcs : snd/%.mml $(MML) | res
 	$(MML) -i=$< -o=$@ -t=gb
 
-res/%.lzt : res/%.tile $(LZSPEC)
+res/%.lzt : tile/%.tile $(LZSPEC) | res
 	$(LZ) LZ77 $(LZSPEC) $< $@
 
-res/%.lzm : res/%.gbm $(LZSPEC)
+res/%.lzm : res/%.gbm $(LZSPEC) | res
 	$(LZ) LZ77 $(LZSPEC) $< $@
 
-res/%.gbm : res/%.tmj
+res/%.gbm : tile/%.tmj | res
 	$(MAPCONV) $< $@
 
 obj lib bin res dep:
 	mkdir $@
 
 clean :
-	rm -rf obj lib bin res/*.mcs res/*.lzm res/*.lzt
+	rm -rf obj lib bin res
 
 DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d) $(LIB2:lib/%.lib=dep/%.d)
 $(DEPFILES):

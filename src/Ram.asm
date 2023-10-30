@@ -27,3 +27,6 @@ Seed            DW
 ModeTimer       DB
 ModeVar0        DB
 .ENDE
+
+.DEFINE BankSound       1 EXPORT
+.DEFINE BankGraphic     2 EXPORT

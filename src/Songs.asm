@@ -3,6 +3,8 @@
 
 
 .SECTION "songs" FREE
+Songs:
+.dw SongTitle, SongTest
 SongTitle:
  .incbin "1_A_Sacred_Lot.mcs"
 SongTest:

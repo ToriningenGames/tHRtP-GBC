@@ -163,7 +163,7 @@ AddTransfer:
 
 ;Add this palette change to the queue, if there's room
 ;A = Color count
-;C = Palette index. Objects are index+64
+;C = Palette index. Objects are index+64. USED RAW! MAKE SURE IT LINES UP!
 ;HL = Source
 ;Carry clear if transfer failed; B, DE destroyed
 ;Carry set if transfer queued; all destroyed
