@@ -1,3 +1,4 @@
+;WLA-GB
 .INCLUDE map.i
 .INCLUDE regs.i
 
@@ -369,6 +370,48 @@ Start:
   LDH (STAT),A
   LD A,%00000001
   LDH (IE),A
+;Ready the menu, too
+  ;Add a palette entry
+  LD A,4
+  LD C,1*8
+  LD HL,MapMenuPal
+  CALL AddPalette
+  ;Extract the adjustments
+  LD HL,$D000
+  PUSH HL
+    LD HL,MapMenu
+    LD DE,InitTemp
+    CALL ExtractSpec
+    CALL ExtractRestoreSP
+    CALL ExtractRestoreSP
+  POP HL
+  ;Apply the adjustments to the map
+  LD HL,InitTemp
+  LD DE,MapTemp+11*32
+  LD C,7*32
+-
+  LDI A,(HL)
+  LD (DE),A
+  INC DE
+  DEC C
+  JR nz,-
+  LD DE,MapTemp+11*32+$240
+  LD C,7*32
+-
+  LDI A,(HL)
+  LD (DE),A
+  INC DE
+  DEC C
+  JR nz,-
+  ;Copy the map to the second tilemap
+  LD A,$26
+  LD HL,MapTemp
+  LD DE,$9C00
+  CALL AddTransfer
+  LD A,$24
+  LD HL,MapTemp+$240
+  LD DE,$9C01
+  CALL AddTransfer
 ;Run title loop
   LD A,15
   LDH (ModeTimer),A
@@ -403,6 +446,60 @@ LineThing:
   POP HL
   POP AF
   RETI
+
+;B=Prior button state
+;HL->function call list
+  ;Function order:
+    ;When right is pressed
+    ;When left is pressed
+    ;When up is pressed
+    ;When down is pressed
+    ;When A is pressed
+    ;When B is pressed
+    ;When Start is pressed
+    ;When Select is pressed
+  ;Called functions should RET for more button processing, or ADD SP,+6, RET to deny
+  ;Things are returned as the called function sees fit
+  ;Otherwise, C, HL is destroyed, B is filled with new button state, A=0
+ButtonReadAct:
+  ;Get buttons
+  LDH A,(Buttons)
+  LD C,A
+  XOR B
+  LD B,C
+  AND C
+-
+  OR A
+  RET z
+  RRA
+  JR nc,+
+  PUSH HL
+  PUSH AF
+  LDI A,(HL)
+  LD H,(HL)
+  LD L,A
+  RST $30
+  POP AF
+  POP HL
++
+  INC HL
+  INC HL
+  JR -
+;For when an action is context sensitive
+;HL->Function call list
+;D=List index
+ButtonSubmenuEscape:
+  LD A,D
+  ADD A
+  ADD L
+  LD L,A
+  LD A,0
+  ADC H
+  LD H,A
+  LDI A,(HL)
+  LD H,(HL)
+  LD L,A
+  JP HL
 .ENDS
 
 .SECTION "Title Loop" FREE ALIGN 16
@@ -411,6 +508,9 @@ AttractText:
 AttractNoText:
 .db $80,$80,$80,$80,$80,$80,$9A, 7, 8,$80,$80,$80,$80,$80,$80,$80
 AttractEnter:
+;Various things could put us here; make sure the right screen is showing
+  LD A,%10000000
+  LDH (LCDC),A
   LD B,$FF
 AttractLoop:
   HALT
@@ -445,52 +545,48 @@ AttractLoop:
   POP BC
 +
   JR AttractLoop
+MenuReenter:
+  CALL MenuEnterCommon
+  LD D,1
+  LD B,$FF
+  CALL MenuSelect
+  JP MenuLoop
+  
+MenuEnterCommon:
+  LD HL,InitTemp+32
+  LD DE,$9C00+32*12
+  LD A,7
+  CALL AddTransfer
+  ;Clear the palette tiles
+  LD HL,MapTemp+$240+32*(12)+5
+  LD BC,$040A
+-
+  LD A,%00000001
+--
+  LDI (HL),A
+  DEC C
+  JR nz,--
+  LD C,$0A
+  LD A,22
+  ADD L
+  LD L,A
+  LD A,0
+  ADC H
+  LD H,A
+  DEC B
+  JR nz,-
+  LD HL,MapTemp+$240+32*(12)
+  LD DE,$9D81
+  LD A,$07
+  CALL AddTransfer
+  RET
+  
 MenuEnter:
   LD HL,AttractNoText
   XOR A
   LD DE,$99C0
   CALL AddTransfer
-  ;Add a palette entry
-  LD A,4
-  LD C,1*8
-  LD HL,MapMenuPal
-  CALL AddPalette
-  ;Extract the adjustments
-  LD HL,$D000
-  PUSH HL
-    LD HL,MapMenu
-    LD DE,InitTemp
-    CALL ExtractSpec
-    CALL ExtractRestoreSP
-    CALL ExtractRestoreSP
-  POP HL
-  ;Apply the adjustments to the map
-  LD HL,InitTemp
-  LD DE,MapTemp+11*32
-  LD C,7*32
--
-  LDI A,(HL)
-  LD (DE),A
-  INC DE
-  DEC C
-  JR nz,-
-  LD DE,MapTemp+11*32+$240
-  LD C,7*32
--
-  LDI A,(HL)
-  LD (DE),A
-  INC DE
-  DEC C
-  JR nz,-
-  ;Copy the map to the second tilemap
-  LD A,$27
-  LD HL,MapTemp
-  LD DE,$9C00
-  CALL AddTransfer
-  LD A,$27
-  LD HL,MapTemp+$240
-  LD DE,$9C01
-  CALL AddTransfer
+  CALL MenuEnterCommon
   ;Slide in
   LD D,$58  ;Head of menu box on screen
   LD B,%10000000  ;The value of LCDC now
@@ -519,37 +615,124 @@ MenuEnter:
   XOR A
   LDH (STAT),A
   ;Register setup
+  LD D,1
+  LD B,$FF
+  CALL MenuSelect
 MenuLoop:
-  ;...
   HALT
+  LD HL,MenuActions
+  CALL ButtonReadAct
   JR MenuLoop
+MenuActions:
+.dw 2,2,MenuUp,MenuDown,MenuAction,MenuBQuit,2,2
+MenuItems:
+.dw GameStartNew,GameStartSaved,OptionsEnter,AttractEnter
+MenuAction:
+  LD HL,MenuItems-2
+  ADD SP,+8
+  JP ButtonSubmenuEscape
+MenuDown:
+  INC D
+  LD A,5
+  CP D
+  JR nz,+
+  LD D,4
++
+  JR MenuSelect
+MenuBQuit:
+  LD A,4
+  CP D
+  JR nz,MenuReadyQuit
+  ;Already on quit, quit.
+  JR MenuAction
+MenuReadyQuit:
+  ;Run through the lines, since we may not be next to quit
+  LD D,2
+  CALL MenuSelect
+  LD D,3
+  CALL MenuSelect
+  LD D,5
+    ;Fallthrough
+MenuUp:
+  DEC D
+  JR nz,+
+  INC D
++   ;Fallthrough
+MenuSelect:
+  PUSH BC
+  PUSH DE
+    LD HL,MapTemp+$240+32*(12-2)+5
+    LD A,D
+    SWAP A
+    ADD A
+    ADD L
+    LD L,A
+    LD A,0
+    ADC H
+    LD H,A
+    LD BC,$030A
+-
+    LD A,%00000001
+    AND B
+--
+    LDI (HL),A
+    DEC C
+    JR nz,--
+    LD C,$0A
+    LD A,22
+    ADD L
+    LD L,A
+    LD A,0
+    ADC H
+    LD H,A
+    DEC B
+    JR nz,-
+    
+    LD HL,MapTemp+$240+32*12
+    LD DE,$9D81
+    LD A,$07
+    CALL AddTransfer
+  POP DE
+  POP BC
+  RET
 .ENDS
 
 .SECTION "Options" FREE ALIGN 16
 OptionsEnter:
+  ;DEBUG
+  JP MusicTestEnter
 OptionsLoop:
   HALT
   JR OptionsLoop
 .ENDS
+.SECTION "Play Game" FREE
+GameStartSaved:
+GameStartNew:
+  JP MenuReenter
+.ENDS
 
 .SECTION "Music Test" FREE ALIGN 16
 MusicTitles:
-.db $80,$80,$80,$80,$80,$80,$80,$80,$80,$80
+.db $2C,$4E,$4C,$42,$3C,$80,$56,$80,$80,$80
 .INCBIN TitleMusicNames.gbm   ;Unzipped!
 MusicUpdateText:
-  PUSH AF
   PUSH BC
   PUSH DE
+    LD HL,MusicTitles-10
     ;Get the right text
-    LD A,D
+    LD A,E
     ADD A
     ADD A
-    ADD D
+    ADD E
     ADD A
-    ADD <MusicTitles
+    ADD A
+    JR nc,+
+    INC H
++
+    ADD L
     LD L,A
-    LD A,>MusicTitles
-    ADC 0
+    LD A,0
+    ADC H
     LD H,A
     ;Move it to the map
     LD DE,MapTemp+32*13+5
@@ -570,12 +753,11 @@ MusicUpdateText:
     JR nz,-
     ;Inform vBlank to do the thing
     LD HL,MapTemp+32*13
-    LD DE,$99A0
+    LD DE,$9DA0
     LD A,4
     CALL AddTransfer
   POP DE
   POP BC
-  POP AF
   RET
 MusicTestEnter:
   LD A,BankSound
@@ -590,6 +772,10 @@ MusicTestEnter:
   LDI (HL),A
   DEC C
   JR nz,-
+  LD HL,MapTemp+32*12
+  LD DE,$9D80
+  LD A,2
+  CALL AddTransfer
 ;Register setup
   LD B,$FF
   LD D,1
@@ -597,46 +783,53 @@ MusicTestEnter:
   CALL MusicUpdateText
 MusicTestLoop:
   HALT
-  ;Check for buttons
-  ;Freshly pressed?
-  LDH A,(Buttons)
-  LD C,A
-  XOR B
-  LD B,C
-  AND C
-  RRA     ;Right
-  JR nc,+
+  LD HL,MusicActions
+  CALL ButtonReadAct
+  JR MusicTestLoop
+MusicActions:
+.dw MusicNext,MusicPrev,MusicReadyPlay,MusicReadyQuit,MusicQuitPlay,MusicBQuit,2,2
+MusicNext:
   ;Select next song
-  INC D
+  INC E
   LD A,16
-  CP D
-  CALL nz,MusicUpdateText
-  JR nz,MusicTestLoop
-  LD D,1
-  CALL MusicUpdateText
-  JR MusicTestLoop
+  CP E
+  JR nz,+
+  LD E,1
 +
-  RRA     ;Left
-  JR nc,+
+  CALL MusicUpdateText
+  RET
+MusicPrev:
   ;Select previous song
-  DEC D
-  CALL nz,MusicUpdateText
-  JR nz,MusicTestLoop
-  LD D,16
-  CALL MusicUpdateText
-  JR MusicTestLoop
+  DEC E
+  JR nz,+
+  LD E,15
 +
-  RRA     ;Up
-  RRA     ;Down
-  JR c,MTQuitEnter  ;Move to quit
-  RRA     ;A
-  JR nc,+
+  CALL MusicUpdateText
+  RET
+MusicReadyPlay:
+  LD D,1
+  RET
+MusicBQuit:
+  DEC D
+  INC D
+  JR z,MusicQuitPlay  ;If we're already on quit, quit
+MusicReadyQuit:
+  LD D,0
+  RET
+MusicQuitPlay:
+  DEC D
+  INC D
+  JR nz,+
+  ADD SP,+8
+  ;JP OptionsEnter
+  ;DEBUG!
+  JP MenuReenter
++
   ;Play selected song
   PUSH BC
-    LD A,D
-    DEC A
+    LD A,E
     ADD A
-    LD HL,Songs
+    LD HL,Songs-2
     ADD L
     LD L,A
     LD A,0
@@ -647,34 +840,7 @@ MusicTestLoop:
     LD C,A
     CALL MusicLoad
   POP BC
-  JR MusicTestLoop
-+
-  RRA     ;B
-  JR nc,MusicTestLoop
-MTQuitEnter:
-  ;Palette updates
-  ;...
-MTQuitLoop:
-  HALT
-  ;Check for buttons
-  ;Freshly pressed?
-  LDH A,(Buttons)
-  LD C,A
-  XOR B
-  LD B,C
-  LD C,A
-  RRA     ;A
-  JP c,OptionsEnter  ;Quit
-  RRA     ;B
-  JP c,OptionsEnter  ;Quit
-  RRA     ;Select
-  RRA     ;Start
-  RRA     ;Right
-  RRA     ;Left
-  RRA     ;Up
-  JR nc,MTQuitLoop
-  ;Go back to the Music Test Loop
-  JR MusicTestEnter
+  RET
 .ENDS
 
 .SECTION "OAM Routine" FREE

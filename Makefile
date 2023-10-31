@@ -51,6 +51,9 @@ res/%.lzm : res/%.gbm $(LZSPEC) | res
 	$(LZ) LZ77 $(LZSPEC) $< $@
 
 res/%.gbm : tile/%.tmj | res
+	$(MAPCONV) -p $< $@
+
+res/TitleMusicNames.gbm : tile/TitleMusicNames.tmj | res
 	$(MAPCONV) $< $@
 
 obj lib bin res dep:
