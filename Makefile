@@ -53,7 +53,7 @@ res/%.lzm : res/%.gbm $(LZSPEC) | res
 res/%.gbm : tile/%.tmj | res
 	$(MAPCONV) -p $< $@
 
-res/TitleMusicNames.gbm : tile/TitleMusicNames.tmj | res
+res/%.gbm : rawtile/%.tmj | res
 	$(MAPCONV) $< $@
 
 obj lib bin res dep:
@@ -62,8 +62,15 @@ obj lib bin res dep:
 clean :
 	rm -rf obj lib bin res
 
+bin/.gb : $(LINK) $(OBJ) $(LIB1) $(LIB2) | bin
+	-wlalink -v -S -r $(LINK) $@
+
+reset :
+	rm -rf obj lib bin res dep
+	sh -c 'until false; do $(MAKE) bin/.gb; x=$$?; test $$(($$x)) -lt 2 && break ; done'
+
 DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d) $(LIB2:lib/%.lib=dep/%.d)
 $(DEPFILES):
 include $(wildcard $(DEPFILES))
 
-.PHONY: clean all
+.PHONY: clean all reset
