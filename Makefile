@@ -62,12 +62,13 @@ obj lib bin res dep:
 clean :
 	rm -rf obj lib bin res
 
-bin/.gb : $(LINK) $(OBJ) $(LIB1) $(LIB2) | bin
+res/.gb : $(LINK) $(OBJ) $(LIB1) $(LIB2) | bin
 	-wlalink -v -S -r $(LINK) $@
 
 reset :
 	rm -rf obj lib bin res dep
 	sh -c 'until false; do $(MAKE) bin/.gb; x=$$?; test $$(($$x)) -lt 2 && break ; done'
+	rm -f res/.gb
 
 DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d) $(LIB2:lib/%.lib=dep/%.d)
 $(DEPFILES):

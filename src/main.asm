@@ -101,6 +101,15 @@ swaprambank:
   RET
 .ENDS
 
+.SECTION "songs" FREE
+Songs:
+.dw SongTitle, SongTest
+SongTitle:
+ .incbin "1_A_Sacred_Lot.mcs"
+SongTest:
+ .incbin "2_Shrine_of_the_Wind.mcs"
+.ENDS
+
 .ORG $0100
 .SECTION "Header" SIZE $4D FORCE
 ;Entry
@@ -137,6 +146,81 @@ swaprambank:
 .COMPUTEGBCHECKSUM
 .COMPUTEGBCOMPLEMENTCHECK
 
+.ENDS
+
+.SECTION "RAM Init" FREE
+.ASCIITABLE
+MAP "0" TO "9" = $16
+MAP "A" TO "Z" = $20
+MAP "a" TO "z" = $3A
+MAP " " = $15
+MAP "!" = $54
+MAP "?" = $55
+MAP "#" = $56
+MAP "&" = $57
+MAP "*" = $58
+MAP "$" = $59
+MAP "/" = $63
+MAP "." = $64
+MAP "'" = $69
+;Weirder ones 
+MAP "@" = $5A   ;Star
+MAP "%" = $5B   ;Diamond
+MAP "~" = $5C   ;Infinity
+MAP ":" = $5D   ;QED
+MAP "^" = $5E   ;Male
+MAP "+" = $5F   ;Female
+MAP "_" = $60   ;Ellipsis
+MAP "{" = $61   ;Opening Quote
+MAP "}" = $62   ;Closing Quote
+MAP "-" = $65   ;Nakaten
+MAP "<" = $66   ;Left Arrow
+MAP ">" = $67   ;Right Arrow
+MAP "=" = $68   ;End
+.ENDA
+DefaultOptions:
+;Options
+.db $A5,$02,$03
+DefaultHighScore:
+.db $A5
+;High Scores Easy
+.ASC "Rito    "
+.dl 178524
+.db 15
+.ASC "Rito    "
+.dl 148436
+.db 40
+.ASC "Rito    "
+.dl 126351
+.db 45
+.ASC "Rito    "
+.dl 98691
+.db 16
+.ASC "Rito    "
+.dl 86399
+.db 20
+.ASC "Rito    "
+.dl 79885
+.db 7
+.ASC "Rito    "
+.dl 0
+.db 0
+.ASC "Rito    "
+.dl 68716
+.db 8
+.ASC "Rito    "
+.dl 66420
+.db 18
+.ASC "Rito    "
+.dl 65497
+.db 14
+;High Scores Normal
+;High Scores Hard
+;High Scores Lunatic
+DefaultGameSave:
+;Saved game
+ .db $A5
+DefaultOptionsEnd:
 .ENDS
 
 .SECTION "Init" FREE
@@ -236,6 +320,62 @@ Start:
   LD (musicglobalbase+1),A
   LD BC,SongTitle
   CALL MusicLoad
+;Check sRAM
+  LD HL,0
+  LD A,$A
+  LD (HL),A
+  LD H,>RAMGuard
+  LD A,$A5
+  CP (HL)
+  JR z,+
+  ;All RAM Bad
+  LD BC,DefaultOptionsEnd-DefaultOptions+$100
+  LD DE,DefaultOptions
+-
+  LD A,(DE)
+  INC DE
+  LDI (HL),A
+  DEC C
+  JR nz,-
+  DEC B
+  JR nz,-
++
+  LD HL,HighScoreGuard
+  LD A,$A5
+  CP (HL)
+  JR z,+
+  ;High Score Table bad
+  LD BC,DefaultGameSave-DefaultHighScore+$100
+  LD DE,DefaultHighScore
+-
+  LD A,(DE)
+  INC DE
+  LDI (HL),A
+  DEC C
+  JR nz,-
+  DEC B
+  JR nz,-
++
+  LD HL,SaveDataGuard
+  LD A,$A5
+  CP (HL)
+  JR z,+
+  ;Save Data bad
+  LD BC,DefaultOptionsEnd-DefaultGameSave+$100
+  LD DE,DefaultGameSave
+-
+  LD A,(DE)
+  INC DE
+  LDI (HL),A
+  DEC C
+  JR nz,-
+  DEC B
+  JR nz,-
++
+  XOR A
+  LD L,A
+  LD H,L
+  LD (HL),A
 ;Load some tiles
 ;Thankfully the screen is already black, so we don't care what we overwrite
 ;It's the very beginning, so use a whole bank; why not?
@@ -508,6 +648,8 @@ AttractText:
 AttractNoText:
 .db $80,$80,$80,$80,$80,$80,$9A, 7, 8,$80,$80,$80,$80,$80,$80,$80
 AttractEnter:
+  LD HL,AttractEnter
+  PUSH HL
 ;Various things could put us here; make sure the right screen is showing
   LD A,%10000000
   LDH (LCDC),A
@@ -545,12 +687,6 @@ AttractLoop:
   POP BC
 +
   JR AttractLoop
-MenuReenter:
-  CALL MenuEnterCommon
-  LD D,1
-  LD B,$FF
-  CALL MenuSelect
-  JP MenuLoop
   
 MenuEnterCommon:
   LD HL,InitTemp+32
@@ -623,6 +759,13 @@ MenuLoop:
   LD HL,MenuActions
   CALL ButtonReadAct
   JR MenuLoop
+  
+MenuReenter:
+  CALL MenuEnterCommon
+  LD D,1
+  LD B,$FF
+  CALL MenuSelect
+  JP MenuLoop
 MenuActions:
 .dw 2,2,MenuUp,MenuDown,MenuAction,MenuBQuit,2,2
 MenuItems:
@@ -630,7 +773,11 @@ MenuItems:
 MenuAction:
   LD HL,MenuItems-2
   ADD SP,+8
-  JP ButtonSubmenuEscape
+  LD A,4
+  CP D
+  RET z
+  CALL ButtonSubmenuEscape
+  JR MenuReenter
 MenuDown:
   INC D
   LD A,5
@@ -644,7 +791,8 @@ MenuBQuit:
   CP D
   JR nz,MenuReadyQuit
   ;Already on quit, quit.
-  JR MenuAction
+  ADD SP,+8
+  RET
 MenuReadyQuit:
   ;Run through the lines, since we may not be next to quit
   LD D,2
@@ -698,12 +846,138 @@ MenuSelect:
 .ENDS
 
 .SECTION "Options" FREE ALIGN 16
+;Menu appearance
+OptionsText:
+.INCBIN OptionsText.gbm
+.DEFINE OptionsDifficultyStart $6D
 OptionsEnter:
-  ;DEBUG
-  JP MusicTestEnter
+  ;Load text
+  LD HL,OptionsText
+  LD DE,MapTemp+32*12+5
+  LD BC,$030A
+-
+  LDI A,(HL)
+  LD (DE),A
+  INC DE
+  DEC C
+  JR nz,-
+  LD C,$0A
+  LD A,22
+  ADD E
+  LD E,A
+  LD A,0
+  ADC D
+  LD D,A
+  LD C,10
+  DEC B
+  JR nz,-
+  ;Load settings from RAM
+  CALL OptionSettingsLoad
+  ;Highlight adjust
+  LD D,3
+  CALL MenuSelect
+  LD D,2
+  CALL MenuSelect
+  LD D,1
+  CALL MenuSelect
+  ;Register setup
+  LD BC,$FFFF
 OptionsLoop:
   HALT
+  LD HL,OptionsActions
+  CALL ButtonReadAct
   JR OptionsLoop
+OptionAction:
+;Only do something on Music Test or Quit
+  LD A,2
+  CP D
+  RET nc
+  INC A
+  ADD SP,+8
+  CP D
+  PUSH AF
+    CALL z,MusicTestEnter
+  POP AF
+  JR z,OptionsEnter
+  RET
+OptionsActions:
+.dw OptionRight,OptionLeft,MenuUp,MenuDown,OptionAction,MenuBQuit,2,2
+OptionSettingsLoad:
+  PUSH BC
+  PUSH DE
+  LD A,$A
+  LD HL,0+<Difficulty
+  LD (HL),A
+  LD H,>Difficulty
+  LDI A,(HL)
+  LD D,A
+  LD A,(HL)
+  LD E,A
+  XOR A
+  LD H,A
+  LD (HL),A
+  LD HL,MapTemp+32*12+5+6
+  LD A,D
+  ADD A
+  ADD A
+  ADD OptionsDifficultyStart-4
+  LDI (HL),A
+  INC A
+  LDI (HL),A
+  INC A
+  LDI (HL),A
+  INC A
+  LDI (HL),A
+  LD HL,MapTemp+32*13+5+8
+  LD A,E
+  ADD ASC('0')
+  LD (HL),A
+  XOR A
+  LD H,A
+  LD L,H
+  LD (HL),A
+  ;Transfer
+  LD HL,MapTemp+32*12
+  LD DE,$9D80
+  LD A,$07
+  CALL AddTransfer
+  POP DE
+  POP BC
+  RET
+OptionRight:
+  LD E,1
+OptionChange:
+  LD A,2
+  CP D
+  RET c
+  LD H,0
+  LD A,<Difficulty-1
+  ADD D
+  LD L,A
+  LD A,$A
+  LD (HL),A
+  LD H,>Difficulty
+  LD A,(HL)
+  ADD E
+  JR nz,+
+  LD A,1
++
+  CP 7
+  JR c,+
+  LD A,7
++
+  DEC D
+  JR nz,+
+  CP 4
+  JR c,+
+  LD A,4
++
+  INC D
+  LD (HL),A
+  JR OptionSettingsLoad
+OptionLeft:
+  LD E,-1
+  JR OptionChange
 .ENDS
 .SECTION "Play Game" FREE
 GameStartSaved:
@@ -778,7 +1052,7 @@ MusicTestEnter:
   CALL AddTransfer
 ;Register setup
   LD B,$FF
-  LD D,1
+  CALL MusicReadyPlay
   LD E,1
   CALL MusicUpdateText
 MusicTestLoop:
@@ -789,6 +1063,9 @@ MusicTestLoop:
 MusicActions:
 .dw MusicNext,MusicPrev,MusicReadyPlay,MusicReadyQuit,MusicQuitPlay,MusicBQuit,2,2
 MusicNext:
+  DEC D
+  INC D
+  RET z
   ;Select next song
   INC E
   LD A,16
@@ -799,6 +1076,9 @@ MusicNext:
   CALL MusicUpdateText
   RET
 MusicPrev:
+  DEC D
+  INC D
+  RET z
   ;Select previous song
   DEC E
   JR nz,+
@@ -806,24 +1086,54 @@ MusicPrev:
 +
   CALL MusicUpdateText
   RET
+MusicHighlightAdjust:
+  LD HL,MapTemp+$240+13*32+5
+  LD C,10
+  LD A,D
+  XOR 1
+-
+  LDI (HL),A
+  DEC C
+  JR nz,-
+  LD HL,MapTemp+$240+14*32+5
+  LD C,10
+-
+  LDI (HL),A
+  DEC C
+  JR nz,-
+  LD HL,MapTemp+$240+15*32+5
+  LD C,10
+  LD A,D
+-
+  LDI (HL),A
+  DEC C
+  JR nz,-
+  PUSH BC
+  PUSH DE
+    ;Inform vBlank to do the thing
+    LD HL,MapTemp+$240+32*13
+    LD DE,$9DA1
+    LD A,5
+    CALL AddTransfer
+  POP DE
+  POP BC
+  RET
 MusicReadyPlay:
   LD D,1
-  RET
+  JR MusicHighlightAdjust
 MusicBQuit:
   DEC D
   INC D
   JR z,MusicQuitPlay  ;If we're already on quit, quit
 MusicReadyQuit:
   LD D,0
-  RET
+  JR MusicHighlightAdjust
 MusicQuitPlay:
   DEC D
   INC D
   JR nz,+
   ADD SP,+8
-  ;JP OptionsEnter
-  ;DEBUG!
-  JP MenuReenter
+  RET
 +
   ;Play selected song
   PUSH BC

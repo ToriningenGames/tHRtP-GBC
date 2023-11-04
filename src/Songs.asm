@@ -2,15 +2,6 @@
 ;See game engine file for formats.
 
 
-.SECTION "songs" FREE
-Songs:
-.dw SongTitle, SongTest
-SongTitle:
- .incbin "1_A_Sacred_Lot.mcs"
-SongTest:
- .incbin "2_Shrine_of_the_Wind.mcs"
-.ENDS
-
 .SECTION "notepitches" FREE
 ;Channel pitches
 Channel1Pitch:

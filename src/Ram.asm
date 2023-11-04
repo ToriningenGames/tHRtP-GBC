@@ -14,6 +14,24 @@
 ; Bank 0 RAM registers
 
 ; Cartridge RAM
+.STRUCT HighScoreEntry
+name  DSB 8
+score DSB 3
+stage DB
+.ENDST
+
+.ENUM $A000 EXPORT
+RAMGuard          DB
+Difficulty        DB
+Lives             DB
+HighScoreGuard    DB
+HighScoresEasy    INSTANCEOF HighScoreEntry 10
+HighScoresNormal  INSTANCEOF HighScoreEntry 10
+HighScoresHard    INSTANCEOF HighScoreEntry 10
+HighScoresLunatic INSTANCEOF HighScoreEntry 10
+SaveDataGuard     DB
+.ENDE
+
 
 ; HRAM
 .ENUM $80 EXPORT
