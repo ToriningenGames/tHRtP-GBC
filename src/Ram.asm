@@ -1,6 +1,21 @@
 ;WLA-GB v10
 ; Principal RAM registers
 
+.STRUCT HighScoreEntry
+name  DSB 8
+score DSB 3
+stage DB
+.ENDST
+.EXPORT _sizeof_HighScoreEntry
+
+.STRUCT SavedGame
+score DL
+stage db
+lives db
+bombs db
+difficulty db
+.ENDST
+.EXPORT _sizeof_SavedGame
 
 ;$C000 - $C0FF: Sound data
 .DEFINE OAMData         $C100 EXPORT
@@ -12,13 +27,15 @@
 .DEFINE MapTemp         $CB00 EXPORT    ;To end of bank
 
 ; Bank 0 RAM registers
+.DEFINE ExtractTemp     $D000 EXPORT
+
+; Bank 1 RAM registers
+.ENUM $D000 EXPORT
+GameStateData     INSTANCEOF SavedGame
+CardData          DSW 20*10
+.ENDE 
 
 ; Cartridge RAM
-.STRUCT HighScoreEntry
-name  DSB 8
-score DSB 3
-stage DB
-.ENDST
 
 .ENUM $A000 EXPORT
 RAMGuard          DB
@@ -30,6 +47,7 @@ HighScoresNormal  INSTANCEOF HighScoreEntry 10
 HighScoresHard    INSTANCEOF HighScoreEntry 10
 HighScoresLunatic INSTANCEOF HighScoreEntry 10
 SaveDataGuard     DB
+SavedData         INSTANCEOF SavedGame
 .ENDE
 
 
@@ -43,8 +61,12 @@ CurrROMBank     DB
 CurrRAMBank     DB
 vBlankFree      DB
 Seed            DW
-ModeTimer       DB
-ModeVar0        DB
+ModeTimer       DW
+CurrScore       DL
+CurrStage       DB
+CurrLives       DB
+CurrBombs       DB
+CurrDifficulty  DB
 .ENDE
 
 .DEFINE BankSound       1 EXPORT

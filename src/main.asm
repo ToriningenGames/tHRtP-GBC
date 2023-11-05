@@ -103,11 +103,45 @@ swaprambank:
 
 .SECTION "songs" FREE
 Songs:
-.dw SongTitle, SongTest
+.dw SongTitle, SongTest, SongLevel1, SongBoss1, SongLevel6A, SongLevel6B, SongBoss2, SongLevel11A, SongLevel11B, /*SongBoss3A,*/ SongBoss3B, SongLevel16A, SongBoss4A1, SongBoss4A2, SongEnd
+SongListRouteA:
+.dw SongLevel1, SongBoss1, SongLevel6A, SongBoss2, SongLevel11A, SongBoss3A, SongLevel16A, SongBoss4A1, SongBoss4A2
+SongListRouteB:
+.dw SongLevel1, SongBoss1, SongLevel6B, SongBoss2, SongLevel11B, SongBoss3B, SongLevel16B, SongBoss4B
 SongTitle:
  .incbin "1_A_Sacred_Lot.mcs"
 SongTest:
  .incbin "2_Shrine_of_the_Wind.mcs"
+SongLevel1:
+SongLevel16B:
+ .incbin "3_Eternal_Shrine_Maiden.mcs"
+SongBoss1:
+; .incbin "4_The_Positive_and_Negative.mcs"
+SongLevel6A:
+SongCredits:
+; .incbin "5_Highly_Responsive_to_Prayers.mcs"
+SongLevel6B:
+; .incbin "6_Eastern_Strange_Discourse.mcs"
+SongBoss2:
+; .incbin "7_Angels_Legend.mcs"
+SongLevel11A:
+; .incbin "8_Oriental_Magician.mcs"
+SongLevel11B:
+; .incbin "9_Blade_of_Banishment.mcs"
+SongBoss3A:
+; .incbin "10_Magic_Mirror_Makai.mcs"
+SongBoss3B:
+; .incbin "10_Magic_Mirror.mcs"
+SongLevel16A:
+; .incbin "11_The_Legend_of_KAGE.mcs"
+SongBoss4A1:
+; .incbin "12_Now_Until_the_Moment_You_Die.mcs"
+SongBoss4A2:
+; .incbin "13_We_Shall_Die_Together.mcs"
+SongBoss4B:
+; .incbin "14_Swordman_of_a_Distant_Star.mcs"
+SongEnd:
+; .incbin "15_Iris.mcs"
 .ENDS
 
 .ORG $0100
@@ -219,7 +253,7 @@ DefaultHighScore:
 ;High Scores Lunatic
 DefaultGameSave:
 ;Saved game
- .db $A5
+ .db 0
 DefaultOptionsEnd:
 .ENDS
 
@@ -654,15 +688,17 @@ AttractEnter:
   LD A,%10000000
   LDH (LCDC),A
   LD B,$FF
+  PUSH AF
 AttractLoop:
-  HALT
-  ;Check for buttons
-  LDH A,(Buttons)
-  LD C,A
-  XOR B
-  LD B,C
-  AND C
-  ;Any button pressed, go to the menu
+    HALT
+    ;Check for buttons
+    LDH A,(Buttons)
+    LD C,A
+    XOR B
+    LD B,C
+    AND C
+    ;Any button pressed, go to the menu
+  POP DE
   JR nz,MenuEnter
   ;Check for blink
   LDH A,(ModeTimer)
@@ -672,21 +708,21 @@ AttractLoop:
   LD A,30
   LDH (ModeTimer),A
   ;Blink the text
-  LDH A,(ModeVar0)
+  LD A,D
   INC A
-  LDH (ModeVar0),A
-  AND 1
-  LD HL,AttractText
-  JR z,++
-  LD HL,AttractNoText
+  PUSH AF
+    AND 1
+    LD HL,AttractText
+    JR z,++
+    LD HL,AttractNoText
 ++
-  PUSH BC
-    XOR A
-    LD DE,$99C0
-    CALL AddTransfer
-  POP BC
+    PUSH BC
+      XOR A
+      LD DE,$99C0
+      CALL AddTransfer
+    POP BC
 +
-  JR AttractLoop
+    JR AttractLoop
   
 MenuEnterCommon:
   LD HL,InitTemp+32
@@ -979,11 +1015,6 @@ OptionLeft:
   LD E,-1
   JR OptionChange
 .ENDS
-.SECTION "Play Game" FREE
-GameStartSaved:
-GameStartNew:
-  JP MenuReenter
-.ENDS
 
 .SECTION "Music Test" FREE ALIGN 16
 MusicTitles:
@@ -1151,6 +1182,88 @@ MusicQuitPlay:
     CALL MusicLoad
   POP BC
   RET
+.ENDS
+
+.SECTION "Play Game" FREE
+GameStartNew:
+  ;Reset saved game
+  LD H,0
+  LD L,<SaveDataGuard
+  LD A,$A
+  LD (HL),A
+  LD H,>SaveDataGuard
+  LD (HL),$A5
+  INC HL
+  XOR A
+  LDI (HL),A  ;Score
+  LDI (HL),A
+  LDI (HL),A
+  LDI (HL),A  ;Stage
+  LD A,(Lives)
+  LDI (HL),A  ;Lives
+  LD A,1
+  LDI (HL),A  ;Bombs
+  LD A,(Difficulty)
+  LDI (HL),A  ;Difficulty
+GameStartSaved:
+  ;Load game from save
+  LD H,0
+  LD L,<SaveDataGuard
+  LD A,$A
+  LD (HL),A
+  LD H,>SaveDataGuard
+  LD A,$A5
+  CP (HL)
+  JR nz,GameStartNew
+  ;Load data
+  INC HL
+  LD BC,CurrScore+((_sizeof_SavedGame+1)<<8)
+  LD DE,GameStateData
+  LD A,1
+  RST $10
+-
+  LDI A,(HL)
+  LD (DE),A
+  INC E
+  DEC C
+  JR nz,-
+  DEC B
+  JR nz,-
+  XOR A
+  LD L,A
+  LD H,L
+  LD (HL),A
+;Test the orb
+  LD A,%10001010
+  LDH (LCDC),A
+  LD HL,OAMData
+  LD A,64
+  LDI (HL),A
+  LD A,100
+  LDI (HL),A
+  LD A,1
+  LDI (HL),A
+  LD A,0
+  LDD (HL),A
+  LD B,15
+  LD A,1
+-
+  HALT
+  DEC B
+  JR nz,-
+  INC A
+  CP 7
+  JR nz,+
+  ;Flip attributes
+  INC L
+  LD A,%01100000
+  XOR (HL)
+  LDD (HL),A
+  LD A,1
++
+  LD (HL),A
+  LD B,3
+  JR -
 .ENDS
 
 .SECTION "OAM Routine" FREE

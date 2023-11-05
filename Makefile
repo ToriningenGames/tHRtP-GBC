@@ -67,7 +67,7 @@ res/.gb : $(LINK) $(OBJ) $(LIB1) $(LIB2) | bin
 
 reset :
 	rm -rf obj lib bin res dep
-	sh -c 'until false; do $(MAKE) bin/.gb; x=$$?; test $$(($$x)) -lt 2 && break ; done'
+	sh -c 'until false; do $(MAKE) res/.gb; x=$$?; test $$(($$x)) -lt 2 && break ; done'
 	rm -f res/.gb
 
 DEPFILES := $(OBJ:obj/%.obj=dep/%.d) $(LIB1:lib/%.lib=dep/%.d) $(LIB2:lib/%.lib=dep/%.d)
