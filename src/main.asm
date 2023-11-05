@@ -71,20 +71,45 @@
   JR lcdintr
 .ORG $50
 ;Timer
-  RETI
+;Used for screensaver
+  PUSH HL
+  PUSH DE
+  PUSH BC
+  PUSH AF
+    JP vBlankEmulation
 .ORG $58
 ;Serial
   RETI
 .ORG $60
 ;Joypad
+;Used for screensaver
+  PUSH AF
+    LDH A,(LCDC)
+    OR %10000000
+    LDH (LCDC),A
+    LDH A,(ScreensaverTimer)
+    OR A
+    JR nz,+
+    LDH A,(ScreensaverTimer+1)
+    OR A
+    JR nz,+
+    ;We are in screensaver mode, eat this input for a few frames so players don't accidentally action.
+    LDH (TAC),A
+    EI
+    LD A,20
+-
+    HALT
+    DEC A
+    JR nz,-
+    LD A,$FF
+    LDH (Buttons),A
++
+    LD A,$50    ;5 minutes
+    LDH (ScreensaverTimer),A
+    LD A,$46+1
+    LDH (ScreensaverTimer+1),A
+  POP AF
   RETI
-
-.SECTION "Interrupts" FORCE
-lcdintr:
-  LDH A,(LCDVec+1)
-  LD H,A
-  JP HL
-.ENDS
 
 .SECTION "Bankswitch" FORCE
 swaprombank:
@@ -99,6 +124,13 @@ swaprambank:
     LD A,C
   POP BC
   RET
+.ENDS
+
+.SECTION "Interrupts" FORCE
+lcdintr:
+  LDH A,(LCDVec+1)
+  LD H,A
+  JP HL
 .ENDS
 
 .SECTION "songs" FREE
@@ -326,6 +358,14 @@ Start:
   RST $10
   INC A
   RST $08
+;Arm the screensaver
+  LD A,256-68       ;60 Hz timer
+  LDH (TMA),A
+  LDH (TIMA),A
+  LD A,$50
+  LDH (ScreensaverTimer),A
+  LD A,$46+1
+  LDH (ScreensaverTimer+1),A
 ;Enable interrupts!
   LDH (IF),A
   LD A,%00000001
@@ -688,29 +728,28 @@ AttractEnter:
   LD A,%10000000
   LDH (LCDC),A
   LD B,$FF
-  PUSH AF
+  LD D,A
 AttractLoop:
-    HALT
-    ;Check for buttons
-    LDH A,(Buttons)
-    LD C,A
-    XOR B
-    LD B,C
-    AND C
-    ;Any button pressed, go to the menu
-  POP DE
+  HALT
+  ;Check for buttons
+  LDH A,(Buttons)
+  LD C,A
+  XOR B
+  LD B,C
+  AND C
+  ;Any button pressed, go to the menu
   JR nz,MenuEnter
   ;Check for blink
   LDH A,(ModeTimer)
   DEC A
   LDH (ModeTimer),A
-  JR nz,+
+  JR nz,AttractLoop
   LD A,30
   LDH (ModeTimer),A
   ;Blink the text
+  INC D
   LD A,D
-  INC A
-  PUSH AF
+  PUSH DE
     AND 1
     LD HL,AttractText
     JR z,++
@@ -721,8 +760,8 @@ AttractLoop:
       LD DE,$99C0
       CALL AddTransfer
     POP BC
-+
-    JR AttractLoop
+  POP DE
+  JR AttractLoop
   
 MenuEnterCommon:
   LD HL,InitTemp+32
@@ -769,6 +808,8 @@ MenuEnter:
   LDH (LCDVec+1),A
   LD A,$40
   LDH (STAT),A
+  LD A,(IE)
+  LD E,A
   LD A,$03
   LDH (IE),A
 -
@@ -786,6 +827,8 @@ MenuEnter:
   JR nz,-
   XOR A
   LDH (STAT),A
+  LD A,E
+  LDH (IE),A
   ;Register setup
   LD D,1
   LD B,$FF

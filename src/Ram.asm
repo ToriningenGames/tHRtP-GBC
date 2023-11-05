@@ -53,20 +53,21 @@ SavedData         INSTANCEOF SavedGame
 
 ; HRAM
 .ENUM $80 EXPORT
-OAMStart        DSB     12
-LCDVec          DW
-System          DB
-Buttons         DB
-CurrROMBank     DB
-CurrRAMBank     DB
-vBlankFree      DB
-Seed            DW
-ModeTimer       DW
-CurrScore       DL
-CurrStage       DB
-CurrLives       DB
-CurrBombs       DB
-CurrDifficulty  DB
+OAMStart          DSB   12
+LCDVec            DW
+System            DB
+Buttons           DB
+CurrROMBank       DB
+CurrRAMBank       DB
+vBlankFree        DB
+Seed              DW
+ModeTimer         DW
+CurrScore         DL
+CurrStage         DB
+CurrLives         DB
+CurrBombs         DB
+CurrDifficulty    DB
+ScreensaverTimer  DW
 .ENDE
 
 .DEFINE BankSound       1 EXPORT

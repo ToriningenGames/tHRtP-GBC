@@ -79,6 +79,49 @@ OAMEnd:
 ;CRITICAL PORTION END
   LD A,228       ;vBlank free time, divided by 16
   LDH (vBlankFree),A
+;Screensaver check
+  LD C,ScreensaverTimer
+  LDH A,(ScreensaverTimer+1)
+  OR A
+  JR nz,++
+  LDH A,(C)
+  OR A
+  JR z,+
+++
+  LDH A,(C)
+  DEC A
+  LDH (C),A
+  JR nz,++
+  INC C
+  LDH A,(C)
+  DEC A
+  LDH (C),A
+  JR nz,++
+  ;Screensaver fires
+  LDH A,(IE)
+  LD B,A
+  OR %00010101
+  LDH (IE),A
+  EI
+  NOP   ;Avoid the HALT bug
+  HALT  ;Get us into Mode 1
+  LDH A,(LCDC)
+  AND %01111111
+  LDH (LCDC),A
+  ;vBlank no longer fires; let the timer do it
+  LD A,%00000100
+  LDH (TAC),A
+-
+  HALT
+  LDH A,(ScreensaverTimer)
+  OR A
+  JR z,-
++++
+  XOR A
+  LDH (TAC),A
+  LD A,B
+  LDH (IE),A
+++
 ;Button Check
   LD C,JOYP
   LD A,%00100000
@@ -97,6 +140,10 @@ OAMEnd:
   SWAP A
   OR B
   LDH (Buttons),A
++   ;Skip button reading if screensaver on
+vBlankEmulation:
+  LD A,%00000000  ;For Joypad interrupt
+  LDH (JOYP),A
 ;Sound Check
   LD A,1
   LD ($2000),A
