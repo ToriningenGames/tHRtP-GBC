@@ -37,4 +37,11 @@ Wave:
 ;10 Three octaves up
 .db $00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF
 
+;11 Triangle (messy)
+.db $01,$22,$55,$68,$78,$AA,$DD,$DF,$BF,$DD,$CA,$98,$87,$75,$32,$32
+
+;12 Lowpass Sawtooth
+.hex 8DFFDCCCCBAAA9888776555433332002
+
+
 .ENDS

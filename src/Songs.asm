@@ -23,15 +23,15 @@ Channel4Pitch:
 ;Octaves 2 - 6, following special format
 ;The high-order byte is the associated envelope
  ;      A           B     C           D           E     F           G
- .dw $F173,$4934,$8134,$7101,$3511,$9351,$1E51,$7425,$8625,$FFFF,$B623,$F251
- .dw $00FF,$00FF,$4921,$00FF,$00FF,$D351,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF
+ .dw $F173,$4934,$8134,$B101,$3511,$9351,$1E51,$7425,$8625,$FFFF,$B623,$F251
+ .dw $00FF,$00FF,$4921,$4101,$7101,$D351,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF
  .dw $00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF
  .dw $00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF
  .dw $00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF,$00FF
 Channel4Stacatto:
 ;Associated Stacatto data
  .db $1D,  $00,  $02,  $1F,  $00,  $04,  $00,  $00,  $00,  $FF,  $00,  $04
- .db $FF,  $FF,  $00,  $FF,  $FF,  $04,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF
+ .db $FF,  $FF,  $00,  $1F,  $1F,  $04,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF
  .db $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF
  .db $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF
  .db $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF,  $FF
@@ -51,7 +51,8 @@ Channel4Stacatto:
 ;Octave 3: Rolls, rides, and runs
     ;A
     ;B: Snare roll crescendo
-    ;C
+    ;C: Hi hat (closed) (quiet)
+    ;C+: Hi hat (closed) (moderate)
     ;D: Elec. Snare (mid-loud)
     ;E
     ;F
