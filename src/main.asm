@@ -135,7 +135,7 @@ lcdintr:
 
 .SECTION "songs" FREE
 Songs:
-.dw SongTitle, SongTest, SongLevel1, SongBoss1, SongLevel6A, SongLevel6B, SongBoss2, SongLevel11A, SongLevel11B, /*SongBoss3A,*/ SongBoss3B, SongLevel16A, SongBoss4A1, SongBoss4A2, SongEnd
+.dw SongTitle, SongTest, SongLevel1, SongLevel6A, SongLevel6B, SongLevel11A, SongLevel11B, SongLevel16A, SongBoss1, SongBoss2, SongBoss3B, SongBoss4A1, SongBoss4A2, SongBoss4B, SongEnd
 SongListRouteA:
 .dw SongLevel1, SongBoss1, SongLevel6A, SongBoss2, SongLevel11A, SongBoss3A, SongLevel16A, SongBoss4A1, SongBoss4A2
 SongListRouteB:
@@ -148,32 +148,32 @@ SongLevel1:
 SongLevel16B:
  .incbin "3_Eternal_Shrine_Maiden.mcs"
 SongBoss1:
-; .incbin "4_The_Positive_and_Negative.mcs"
+ .incbin "4_The_Positive_and_Negative.mcs"
 SongLevel6A:
 SongCredits:
-; .incbin "5_Highly_Responsive_to_Prayers.mcs"
+ .incbin "5_Highly_Responsive_to_Prayers.mcs"
 SongLevel6B:
-; .incbin "6_Eastern_Strange_Discourse.mcs"
+ .incbin "6_Eastern_Strange_Discourse.mcs"
 SongBoss2:
-; .incbin "7_Angels_Legend.mcs"
+ .incbin "7_Angels_Legend.mcs"
 SongLevel11A:
-; .incbin "8_Oriental_Magician.mcs"
+ .incbin "8_Oriental_Magician.mcs"
 SongLevel11B:
-; .incbin "9_Blade_of_Banishment.mcs"
+ .incbin "9_Blade_of_Banishment.mcs"
 SongBoss3A:
-; .incbin "10_Magic_Mirror_Makai.mcs"
+ .incbin "10_Magic_Mirror_Makai.mcs"
 SongBoss3B:
-; .incbin "10_Magic_Mirror.mcs"
+ .incbin "10_Magic_Mirror.mcs"
 SongLevel16A:
-; .incbin "11_The_Legend_of_KAGE.mcs"
+ .incbin "11_The_Legend_of_KAGE.mcs"
 SongBoss4A1:
-; .incbin "12_Now_Until_the_Moment_You_Die.mcs"
+ .incbin "12_Now_Until_the_Moment_You_Die.mcs"
 SongBoss4A2:
-; .incbin "13_We_Shall_Die_Together.mcs"
+ .incbin "13_We_Shall_Die_Together.mcs"
 SongBoss4B:
-; .incbin "14_Swordman_of_a_Distant_Star.mcs"
+ .incbin "14_Swordman_of_a_Distant_Star.mcs"
 SongEnd:
-; .incbin "15_Iris.mcs"
+ .incbin "15_Iris.mcs"
 .ENDS
 
 .ORG $0100
