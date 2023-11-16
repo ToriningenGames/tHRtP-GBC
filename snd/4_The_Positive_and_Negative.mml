@@ -1,6 +1,107 @@
-^0
-X0 [:R1]
-X1 [:R1]
-X2 [:R1]
-X3 [:R1]
-X4 [:R1]
+# The Positive and Negative
+# Composer: ZUN
+# Arranger: Toriningen
+
+# The arpeggio is echoed; if we just play each note twice, we get a similar but slightly more hectic effect. This is fine for boss music, but we need to be cognizant of the monotony. Channel 1.
+# Drums are drums; Channel 4.
+
+# The bass is always fifths; easy to accommodate or ignore at choice.
+# The melody doesn't do anything weird, more or less.
+# We leave these other parts and highlights variously to channels 2 and 3 as needed to best capture the sound. Sadly, the violin fluorish had to be dropped.
+
+
+@0 T182
+
+X0 @0 H$FF V$FF
+[0:0
+    R1
+]0
+
+X1 @0 O6 S0 H0 V$71 I1
+[0:0 ^16
+    [1:1 FFFF>CC<FF ]15
+    D-D-D-D-A-A-D-D-GGFFE-E-FFE-E-E-E->B-B-<E-E-GGA-A->B-B-CC<
+    R1.8
+    [1:1 FFFF>CC<FF ]15
+    O5 V$93 ^8
+        [1:1
+           CCCCFCA-C
+           GCFCE-CFC
+        ]1
+        CCCCFCA-C
+        GCFCE-C>B-<C
+        CCCCFCA-C
+        GCFCE-GA->B-
+    O6 V$71 ^16
+    [1:1 FFFF>CC<FF ]15
+]0
+
+X2 @0 H0 V$FF O3 ^1
+[0:0
+    FE-D-E-
+    FE-D-E-
+    D-E-
+    [1:1 FE-D-E- ]7
+]0
+
+X3 @0
+[0:0 ^1 I2.14 V$FF O6
+    R
+    F.3
+    R
+    F.3
+    R.2 ^8 I2.4
+    [3:3
+        [1:1
+           CCCCFCA-C
+           GCFCE-CFC
+        ]1
+        CCCCFCA-C
+        GCFCE-C>B-<C
+        CCCCFCA-C
+        GCFCE-GA->B-<
+    ]1
+    ^16
+    C4.3 E-8F8
+    C4.3 RB-CB-
+    C4.3 F8G8
+    A-4.3G4
+    A-8G8F4.3
+    A-8G8F4.3
+    A-8G8F2>B-4<
+    A-8.3G8.3E-4
+    ^8
+    CFA-G>B-<A-GA-
+    A-GFCB-<A-GE-
+    >B-<A-GA-A-GFC
+    A-GFC>B-<A-GA-
+    <FGA-GA->CFG
+    A->B-C<A->B-CFG
+    GA-A-2G4GA-A-4.3
+]0
+
+X4 @0
+[0:0 O2 ^16
+    [1:1 C8 C C ]30
+    B B B8
+    A8C8B8CAA8A8BBB8
+    A8C8B8CAA8A8BBBB
+    [1:1
+        A8C8B8C+8A8A8B8C8
+        A8A8B8C+8A4B8C8
+    ]2
+    A8C8B8C+8A8A8B8C8
+    A8A8B8C+8A4BBBB
+    [1:1 ^8
+        AABC+AABB
+    ]6
+    AABC+AC ^16 BBBB
+    ^1
+    AAAA4.3 ^4
+    [1:1 C+ ]14 ^16
+    AAAABBBB
+    [1:1 ^8
+        AABC+AABB
+    ]6
+    AABC+A4 ^16 BBBB
+]0

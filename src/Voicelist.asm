@@ -43,5 +43,10 @@ Wave:
 ;12 Lowpass Sawtooth
 .hex 8DFFDCCCCBAAA9888776555433332002
 
+;13 Square (True third) (Note: Play one octave lower than the root)
+.hex 8FE95347AB9766788789986458BCA610
+
+;14 Square (True fifth)
+.hex 8FEA87ADFDA78AEF8015885202588510
 
 .ENDS

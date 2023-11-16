@@ -1,6 +1,97 @@
-^0
-X0 [:R1]
-X1 [:R1]
-X2 [:R1]
-X3 [:R1]
-X4 [:R1]
+# Highly Responsive to Prayers
+# Composer: ZUN
+# Arranger: Toriningen
+
+# This song is the first one to really break the hi-hat/snare/bass drum mould, so something to consider there.
+# This is also the first one to have the mid-song keyshift I see ZUN pull a lot. This makes the sheet very hard to read, and basically doubles the MML's size :(.
+# At first blush, this song is 4 voice + drums, but it's actually 5 distinct voices! The pair that seems to just be the melody actually does a phrase echo.
+# All in all, this is the hardest piece to capture thus far, and will lose something in the transition.
+# Since this isn't a boss piece, the arpeggio's echo will just be dropped.
+# The bass will have to be just one channel.
+# Outside of the opening, the arpeggio will have to be absent altogether.
+# There will have to be some tricky sharing between the melody and bass during the chorus.
+
+@0 T156
+
+X0 @0
+[0:0 V$FF H$FF
+    R1
+]0
+
+#Note: The length register is unable to go small enough to properly stacatto (?)
+X1 @0 V$7F I1
+[0:0 ^32
+    [1:1 O6
+        R8 F.3R F.3RR8 E.3RR8 F.3RR8
+        R8 F.3R F.3RR8 E.3RR8 F.3RR8
+        R8 F.3R F.3RR8 E.3RR8 F8 G.3R
+        R8 G.3R G.3RR8 G.3RR8 > A.3RR8
+    ]3
+    O5 ^1 I2
+    A<GFEFGD V$71 D
+    [1:1 O6 ^32 V$7F I1
+        R8 F.3R F.3RR8 E.3RR8 F.3RR8
+        R8 F.3R F.3RR8 E.3RR8 F.3RR8
+        R8 F.3R F.3RR8 E.3RR8 F8 G.3R
+        R8 G.3R G.3RR8 G.3RR8 > A.3RR8
+    ]1
+    [1:1 O6
+        R8 G-.3R G-.3RR8 F.3RR8 G-.3RR8
+        R8 G-.3R G-.3RR8 F.3RR8 G-.3RR8
+        R8 G-.3R G-.3RR8 F.3RR8 G-8 A-.3R
+        R8 A-.3R A-.3RR8 A-.3RR8 > B-.3RR8
+    ]11
+]0
+
+X2 @0
+[0:0 O5 ^8 V$FF
+    [1:1 R A D >A< G F E F D A E A F A E A D A E A F A G A F A E A D A C A ]3
+    ^1
+    O5
+    D E2 G2 F E2 G2 F E2 G2 D E4.3 F4 F E2 G2 F E2 G2 F16 E16 E4 F8.5 E2 G2 D.2
+    O5 ^8
+    [1:1 R A+ D+ >A+< G+ F+ E+ F+ D+ A+ E+ A+ F+ A+ E+ A+ D+ A+ E+ A+ F+ A+ G+ A+ F+ A+ E+ A+ D+ A+ C+ A+ ]1
+    O5 ^1
+    E- F2 A-2 G- F2 A-2 G- F2 A-2 E-
+    F4.3 G-4 G- F2 A-2 G- F2 A-2 G-16 F16 F4 G-8.5
+    F2 A-2 E- > B-2 < A-2
+    ^8
+    > R B- E- >B-< A- G- F G- G- F E- B- G- F E- B-
+    > R B- E- >B-< A- G- F G- G- F E- B- G- F E- B- <
+      R B- E- >B-< A- G- F G- G- F E- B- A- G- F G-
+      G- F E- B- A- G- F G-G- F E- B- > D- C- ^16 B-<A-G-F
+    ^32
+    [4:4
+    [2 [3]0
+    :2       A->B-< E-E- G-F G-E-
+    :3  [1:1 G->B-< E-E- E-F G-E- ]2
+    ]3
+    >B-D-< E->C-< F>B-< G->C-<
+    ]3
+    #^64
+    #[4:4
+    #[2 [3]0
+    #:2       A->B-<A->B-< E-E-E-E- G-FG-F G-E-G-E-
+    #:3  [1:1 G->B-<G->B-< E-E-E-E- E-FE-F G-E-G-E- ]2
+    #]3
+    #>B-D-B-D-< E->C-<E->C-< F>B-<F>B-< G->C-<G->C-<
+    #]3
+]0
+
+X3 @0 I2 V$FF O3
+[0:0 ^1
+    [: D C B- C ]7
+    [: E- D- C- D- ]11
+]0
+
+X4 @0
+[0:0 ^16 O2
+    [1:1 C8 C C ]29
+    [1:1 C8 C C B8 C C ]14
+    A8 C8 B8 C+8 A8 A8 B8 C8
+    [1:1 C8 C C B8 C C ]78
+    C8 CC DDDD
+    [1:1 C8 C C B8 C C ]14
+    C8 CC DDDD
+    [1:1 F8 C C B8 C C ]31
+]0
