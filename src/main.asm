@@ -679,6 +679,7 @@ LineThing:
 ButtonReadAct:
   ;Get buttons
   LDH A,(Buttons)
+  CPL
   LD C,A
   XOR B
   LD B,C
@@ -734,6 +735,7 @@ AttractLoop:
   HALT
   ;Check for buttons
   LDH A,(Buttons)
+  CPL
   LD C,A
   XOR B
   LD B,C
@@ -847,7 +849,7 @@ MenuReenter:
   CALL MenuSelect
   JP MenuLoop
 MenuActions:
-.dw 2,2,MenuUp,MenuDown,MenuAction,MenuBQuit,2,2
+.dw 2,2,MenuUp,MenuDown,MenuAction,MenuBQuit,MenuAction,MenuAction
 MenuItems:
 .dw GameStartNew,GameStartSaved,OptionsEnter,AttractEnter
 MenuAction:
@@ -981,7 +983,7 @@ OptionAction:
   JR z,OptionsEnter
   RET
 OptionsActions:
-.dw OptionRight,OptionLeft,MenuUp,MenuDown,OptionAction,MenuBQuit,2,2
+.dw OptionRight,OptionLeft,MenuUp,MenuDown,OptionAction,MenuBQuit,OptionAction,OptionAction
 OptionSettingsLoad:
   PUSH BC
   PUSH DE
@@ -1136,7 +1138,7 @@ MusicTestLoop:
   CALL ButtonReadAct
   JR MusicTestLoop
 MusicActions:
-.dw MusicNext,MusicPrev,MusicReadyPlay,MusicReadyQuit,MusicQuitPlay,MusicBQuit,2,2
+.dw MusicNext,MusicPrev,MusicReadyPlay,MusicReadyQuit,MusicQuitPlay,MusicBQuit,MusicQuitPlay,MusicQuitPlay
 MusicNext:
   DEC D
   INC D
