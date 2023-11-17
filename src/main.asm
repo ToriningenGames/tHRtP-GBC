@@ -147,7 +147,6 @@ SongTest:
 SongLevel1:
 SongLevel16B:
  .incbin "3_Eternal_Shrine_Maiden.mcs"
- ;Note to self: polish all of these songs:
 SongBoss1:
  .incbin "4_The_Positive_and_Negative.mcs"
 SongLevel6A:
