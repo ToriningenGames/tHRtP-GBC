@@ -12,14 +12,31 @@
 # There will have to be some tricky sharing between the melody and bass during the chorus.
 
 @0 T156
+@1 V$45 H%01011011  #Opening
+@2      H%01111001  #Stumble highlight
+@3 V$45 H%01111001  #Chorus 1
+@5 V$56 H%01011011  #Verse
+@4 V$67             #Chorus 2
+@6 V$55 H%10111111  #Hook
+@7 V$77 H%10110101  #Ending
 
 X0 @0
-[0:0 V$FF H$FF
-    R1
+[0:0 @1
+ R1.8 R1.8
+ @3
+ R1.8 R1.4 H%01011011 R8 @3 R8.31
+ @5
+ R1.8
+ @4
+ R1.8 R1.4 @2 R8 @4 R8.31
+ @6
+ R1.8
+ @7
+ R1.8 R1.8
 ]0
 
 #Note: The length register is unable to go small enough to properly stacatto (?)
-X1 @0 V$7F I1
+X1 @0 V$4F I1
 [0:0 ^32
     [1:1 O6
         R8 F.3R F.3RR8 E.3RR8 F.3RR8
@@ -28,8 +45,8 @@ X1 @0 V$7F I1
         R8 G.3R G.3RR8 G.3RR8 > A.3RR8
     ]3
     O5 ^1 I2
-    A<GFEFGD V$71 D
-    [1:1 O6 ^32 V$7F I1
+    A<GFEFGD V$D7 D
+    [1:1 O6 ^32 V$4F I1
         R8 F.3R F.3RR8 E.3RR8 F.3RR8
         R8 F.3R F.3RR8 E.3RR8 F.3RR8
         R8 F.3R F.3RR8 E.3RR8 F8 G.3R
@@ -44,23 +61,23 @@ X1 @0 V$7F I1
 ]0
 
 X2 @0
-[0:0 O5 ^8 V$FF
+[0:0 O6 ^8 V$A0 I2
     [1:1 R A D >A< G F E F D A E A F A E A D A E A F A G A F A E A D A C A ]3
     ^1
-    O5
-    D E2 G2 F E2 G2 F E2 G2 D E4.3 F4 F E2 G2 F E2 G2 F16 E16 E4 F8.5 E2 G2 D.2
-    O5 ^8
+    O5 V$B0
+    D E2 G2 F E2 G2 F E2 G2 D V$B7 E4.3 V$D0 F4 F E2 G2 F E2 G2 F16 E16 E4 F8.5 E2 G2 D.2
+    O6 ^8 V$A0
     [1:1 R A+ D+ >A+< G+ F+ E+ F+ D+ A+ E+ A+ F+ A+ E+ A+ D+ A+ E+ A+ F+ A+ G+ A+ F+ A+ E+ A+ D+ A+ C+ A+ ]1
-    O5 ^1
+    O5 ^1 V$D0
     E- F2 A-2 G- F2 A-2 G- F2 A-2 E-
-    F4.3 G-4 G- F2 A-2 G- F2 A-2 G-16 F16 F4 G-8.5
+    F4.3 G-4 V$E0 G- F2 A-2 G- F2 A-2 G-16 F16 F4 G-8.5
     F2 A-2 E- > B-2 < A-2
-    ^8
+    ^8 V$F4 I3
     > R B- E- >B-< A- G- F G- G- F E- B- G- F E- B-
     > R B- E- >B-< A- G- F G- G- F E- B- G- F E- B- <
       R B- E- >B-< A- G- F G- G- F E- B- A- G- F G-
-      G- F E- B- A- G- F G-G- F E- B- > D- C- ^16 B-<A-G-F
-    ^32
+      G- F E- B- A- G- F G-G- F E- B- > D- C- ^16 I2 B-<A-G-F
+    ^32 V$C1
     [4:4
     [2 [3]0
     :2       A->B-< E-E- G-F G-E-
@@ -78,7 +95,7 @@ X2 @0
     #]3
 ]0
 
-X3 @0 I2 V$FF O3
+X3 @0 I2.2 V$FF O3
 [0:0 ^1
     [: D C B- C ]7
     [: E- D- C- D- ]11
