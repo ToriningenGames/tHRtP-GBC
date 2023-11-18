@@ -1,6 +1,108 @@
+# Eastern Strange Discourse
+# Composer: ZUN
+# Arranger: Toriningen
+
+# In the original release, the bass was just slightly too early, making reading the sheet a living hell. I took the liberty of "fixing" the timing, since I'm pretty sure it was a mistake/glitch. So screwy, my sheet's tempo was wiped! Pretty sure it's 152 BPM.
+# This is also the first song with a nonstandard loop. I tried my best.
+# Aside, this piece is really fun and full of energy; the bass goes places! The selection and intensity of parts make sure the piece sounds full and complete.
+
+@0 T152
+
 ^0
-X0 [:R1]
-X1 [:R1]
-X2 [:R1]
-X3 [:R1]
-X4 [:R1]
+X0 V$FF H$FF [:R1]
+
+X1 @0
+V$FF I2 H0 O4 ^8
+D+2.3 D+R F+R
+G+1 G+4 > A+4 B4 C+4 <
+G+2.7 > G+R > A+R
+[0:0
+    [1[2]0
+    :1 O5
+        C+4.3 F+8.3 D+8.6 C+16B16
+        C+8.3 F+8.3 G+4 D+8.7 D+16F+16
+        G+8.7D+16F+16 G+8.7D+16F+16
+        G+8.3 >B4 A+16<G+16F+4 G+1
+        R2 G+R > A+R
+    :2 O6 B1
+        RBC+D+C+BA+<F+G+1
+        RG+>A+BA+<G+F+D+G+1
+        RG+>A+BA+<G+D+G+D+2.3
+        G+R>A+RB1
+        RBC+D+C+BA+16B16<F+G+1
+        RG+>A+BA+<G+F+D+G+1
+        RG+>A+BA+<G+D+G+D+1.2
+    ]1
+    R1.7
+    G+2 > A+2
+]0
+
+X2 O6 ^8 @0 V$FF I2 H0
+B<G+D+>B A+<F+D+>A+ <G+D+C+F+ D+BC+A+32.3 D+32.5
+  B<G+>D+C+A+<F+>C+ ^16
+B<G+D+>B A+<F+D+>A+ <G+D+C+G+ F+D+C+E+
+[1:1
+    O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BC+
+    O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BA+
+]1
+[0:0
+    [1:1
+        O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BC+ 
+        O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BA+
+    ]11
+    R1
+    [1:1 ^4 H20
+        O6 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BC+
+        O6 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BA+
+    ]1
+    H0
+    [1:1 O4 ^16
+        D+D+>B<D+ D+>A+<G+F+ D+D+>B<D+ D+EF+G+
+        D+D+>B<D+ D+>A+<G+F+ D+D+>B<D+ >BD+D+D+
+    ]3
+]0
+
+X3 O5 ^8 I2 @0 V$FF H0
+B<G+D+>B A+<F+D+>A+ <G+D+C+F+ D+BC+A+
+D+B<G+>D+ C+A+<F+>C+ ^16
+B<G+D+>B A+<F+D+>A+ <G+D+C+G+F+D+>C+<E+
+[1:1
+    O3 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BC+
+    O3 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BA+
+]1
+[0:0 
+    [2:2 O2
+        G+8>D+8<G+G+>D+<G+G+8>D+8<G+G+>D+<G+
+        G+8>D+8<G+G+>D+<G+G+G+>D+<G+F+>C+<F+>C+<
+        [1:1 E8>B8<EE>B<EEE>B<EE8>B8< ]1
+        [1:1 E-8>B-8<E-E->B-<E-E-E->B-<E-E-8>B-8< ]1
+        >B8<F+8>BB<F+>BBB<F+>BB8<F+8
+        C+8G+8C+C+G+C+D+D+>A+<D+F+F+>C+<F+
+    ]1
+    O4 ^1
+    C+ B A+ B D+ E G+4.3 > A+4 B R1
+    [2:2 O2 ^16
+        G+8>D+8<G+G+>D+<G+G+8>D+8<G+G+>D+<G+
+        G+8>D+8<G+G+>D+<G+G+G+>D+<G+F+>C+<F+>C+<
+        [1:1 E8>B8<EE>B<EEE>B<EE8>B8< ]1
+        [1:1 E-8>B-8<E-E->B-<E-E-E->B-<E-E-8>B-8< ]1
+        >B8<F+8>BB<F+>BBB<F+>BB8<F+8
+        C+8G+8C+C+G+C+D+D+>A+<D+F+F+>C+<F+
+    ]1
+    [1:1
+        O4 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BC+
+        O4 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BA+
+    ]3
+]0
+
+X4 O2 @0
+A1 A1 A2 A2 A4 A4 A4 A4
+^8 [1:1 A C ]7
+[1:1 A B A16 A16 B A B16 A16 C16 A16 B16 A16 ]3
+[0:0
+    [1:1 A B A16 A16 B A B16 A16 C16 A16 B16 A16 ]20
+    [1:1 A4 ]7
+    [1:1 A B A16 A16 B A B16 A16 C16 A16 B16 A16 ]15
+    R1.7 A2 A2 D+1 G8 R8.3
+    A16 B16 D16 D16 A16 B16 A16 F16
+]0
