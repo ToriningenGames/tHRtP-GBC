@@ -9,10 +9,10 @@
 @0 T152
 
 ^0
-X0 V$FF H$FF [:R1]
+X0 V$76 H%11010111 [:R1]
 
 X1 @0
-V$FF I2 H0 O4 ^8
+V$70 I0 H0 O4 ^8
 D+2.3 D+R F+R
 G+1 G+4 > A+4 B4 C+4 <
 G+2.7 > G+R > A+R
@@ -37,61 +37,66 @@ G+2.7 > G+R > A+R
     G+2 > A+2
 ]0
 
-X2 O6 ^8 @0 V$FF I2 H0
+X2 O6 ^8 @0 V$94 I2 H0
 B<G+D+>B A+<F+D+>A+ <G+D+C+F+ D+BC+A+32.3 D+32.5
-  B<G+>D+C+A+<F+>C+ ^16
+B<G+>D+C+A+<F+>C+ ^16
 B<G+D+>B A+<F+D+>A+ <G+D+C+G+ F+D+C+E+
 [1:1
-    O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BC+
-    O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BA+
+    [2[3]0
+    :2 C+
+    :3 O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+B
+    ]1 A+
 ]1
-[0:0
+[0:0 V$84
     [1:1
-        O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BC+ 
-        O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BA+
+        [2[3]0
+        :2 C+
+        :3 O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+B
+        ]1 A+
     ]11
     R1
-    [1:1 ^4 H20
-        O6 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BC+
-        O6 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+BA+
+    [1:1 ^4 H20 V$77
+        [2[3]0
+        :2 C+
+        :3 O6 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+B
+        ]1 A+
     ]1
     H0
     [1:1 O4 ^16
-        D+D+>B<D+ D+>A+<G+F+ D+D+>B<D+ D+EF+G+
-        D+D+>B<D+ D+>A+<G+F+ D+D+>B<D+ >BD+D+D+
+        [2[3]0
+        :2 D+EF+G+
+        :3 O4 D+D+>B<D+ D+>A+<G+F+ D+D+>B<D+
+        ]1 >BD+D+D+
     ]3
 ]0
 
-X3 O5 ^8 I2 @0 V$FF H0
+X3 O5 ^8 I2 @0 V$7F H0
 B<G+D+>B A+<F+D+>A+ <G+D+C+F+ D+BC+A+
 D+B<G+>D+ C+A+<F+>C+ ^16
 B<G+D+>B A+<F+D+>A+ <G+D+C+G+F+D+>C+<E+
 [1:1
-    O3 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BC+
-    O3 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BA+
+    [2[3]0
+    :2 C+
+    :3 O3 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+B
+    ]1 A+
 ]1
-[0:0 
-    [2:2 O2
-        G+8>D+8<G+G+>D+<G+G+8>D+8<G+G+>D+<G+
-        G+8>D+8<G+G+>D+<G+G+G+>D+<G+F+>C+<F+>C+<
-        [1:1 E8>B8<EE>B<EEE>B<EE8>B8< ]1
-        [1:1 E-8>B-8<E-E->B-<E-E-E->B-<E-E-8>B-8< ]1
-        >B8<F+8>BB<F+>BBB<F+>BB8<F+8
-        C+8G+8C+C+G+C+D+D+>A+<D+F+F+>C+<F+
-    ]1
-    O4 ^1
-    C+ B A+ B D+ E G+4.3 > A+4 B R1
-    [2:2 O2 ^16
-        G+8>D+8<G+G+>D+<G+G+8>D+8<G+G+>D+<G+
-        G+8>D+8<G+G+>D+<G+G+G+>D+<G+F+>C+<F+>C+<
-        [1:1 E8>B8<EE>B<EEE>B<EE8>B8< ]1
-        [1:1 E-8>B-8<E-E->B-<E-E-E->B-<E-E-8>B-8< ]1
-        >B8<F+8>BB<F+>BBB<F+>BB8<F+8
-        C+8G+8C+C+G+C+D+D+>A+<D+F+F+>C+<F+
+[0:0 [5[4]0
+    :5  O4 ^1
+        C+ B A+ B D+ E G+4.3 > A+4 B R1
+    :4  [2:2 ^16
+            [3:3 O2 G+8>D+8<G+G+>D+<G+ ]2 
+            G+G+>D+<G+F+>C+<F+>C+<
+            [1:1 E8>B8<EE>B<EEE>B<EE8>B8< ]1
+            [1:1 E-8>B-8<E-E->B-<E-E-E->B-<E-E-8>B-8< ]1
+            >B8<F+8>BB<F+>BBB<F+>BB8<F+8
+            C+8G+8C+C+G+C+D+D+>A+<D+F+F+>C+<F+
+        ]1
     ]1
     [1:1
-        O4 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BC+
-        O4 G+G+>D+<G+G+>C+BA+<G+G+>D+<G+G+>A+BA+
+        [2[3]0
+        :2 C+
+        :3 O4 G+G+>D+<G+ G+>C+BA+ <G+G+>D+<G+ G+>A+B
+        ]1 A+
     ]3
 ]0
 
