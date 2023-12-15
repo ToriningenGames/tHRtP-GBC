@@ -1278,6 +1278,7 @@ GameStartSaved:
   LD L,A
   LD H,L
   LD (HL),A
+  JP LoadLevel  ;test
 ;Test the orb
   LD A,%10001010
   LDH (LCDC),A
@@ -1309,6 +1310,126 @@ GameStartSaved:
   LD (HL),A
   LD B,3
   JR -
+;Fade to black
+LoadLevel:
+  ;DEBUG:
+  ;Get the graphics on screen!
+  XOR A
+  RST $10
+  LD HL,SP-ExtractSaveSize
+  LD SP,HL
+  LD A,18
+  PUSH AF
+  PUSH HL
+    LD HL,TileDataStage1
+    LD DE,ExtractTemp-$200
+    CALL ExtractSpec
+-
+  POP HL
+  POP AF
+  DEC A
+  JR z,+
+  PUSH AF
+  PUSH HL
+    CALL ExtractRestoreSP
+    JR -
++
+  ADD SP,ExtractSaveSize
+  ;256 tiles...
+  LD DE,$8800
+  LD HL,$D600
+  LD A,63
+  CALL AddTransfer
+  HALT
+  LD DE,$8C00
+  LD HL,$DA00
+  LD A,63
+  CALL AddTransfer
+  HALT
+  LD DE,$9000
+  LD HL,$CE00
+  LD A,63
+  CALL AddTransfer
+  HALT
+  LD DE,$9400
+  LD HL,$D200
+  LD A,63
+  CALL AddTransfer
+  HALT
+  ;24 tiles
+  LD DE,$9001
+  LD HL,$DE00
+  LD A,23
+  CALL AddTransfer
+  ;Generate the tilemap
+  LD HL,ExtractTemp
+  XOR A
+  LD BC,$0E14
+  LD E,C
+  LD D,$0C
+-
+  LDI (HL),A
+  INC A
+  DEC C
+  JR nz,-
+  LD C,D
+--
+  LDI (HL),A
+  DEC C
+  JR nz,--
+  LD C,E
+  DEC B
+  JR nz,-
+  LD DE,$9C80
+  LD HL,$D001
+  LD A,$23
+  HALT
+  CALL AddTransfer
+  ;Get the attributes on screen
+  LD HL,ExtractTemp+$800
+  LD BC,$0E0A
+  LD DE,MapStage1Attr
+-
+  LD A,(DE)
+  AND $F0
+  SWAP A
+  LDI (HL),A
+  LD A,(DE)
+  AND $0F
+  LDI (HL),A
+  INC DE
+  DEC C
+  JR nz,-
+  LD A,$0C
+  ADD L
+  LD L,A
+  LD A,0
+  ADC H
+  LD H,A
+  LD C,$0A
+  DEC B
+  JR nz,-
+  LD DE,$9C81
+  LD HL,$D801
+  LD A,$23
+  HALT
+  CALL AddTransfer
+  ;Load the palette
+  LD C,0
+  LD A,32
+  LD HL,MapStage1Pal
+  CALL AddPalette
+  ;Standard Levels:
+  ;Load the data
+  ;Title characters flash in order, with a star between "hou" and "rei"
+  ;Stage visible
+  ;Show: Stage
+  ;Show: 01
+  ;Title bar shows/Sprites show
+StartLevel:
+PlayLevel:
+CompleteLevel:
+  JR CompleteLevel
 .ENDS
 
 .SECTION "OAM Routine" FREE

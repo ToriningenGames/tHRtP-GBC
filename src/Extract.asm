@@ -13,46 +13,6 @@
 
 .SECTION "Decompress" FREE
 
-LZDecode:
-;HL= Dest
-;DE= Source
-;A = High byte of backreference
-
-;Returns
-;HL= Updated dest
-;DE= Updated source
-
-;Stats:
-    ;Byte size:       24
-    ;Minimum runtime: 184   for   1 byte
-    ;Maximum runtime: 10384 for 256 bytes
-        ;Byte cost: 40 cycles
-
-  CPL
-  LD B,A
-  LD A,(DE)
-  INC DE
-  CPL
-  LD C,A
-  INC DE
-  PUSH HL
-  ADD HL,BC
-  POP BC
-  LD A,(DE)
-  INC DE
-  PUSH DE
-  LD E,A
---
-  LDI A,(HL)
-  LD (BC),A
-  INC BC
-  DEC E
-  JR nz,--
-  POP DE
-  LD H,B
-  LD L,C
-  RET
-
 ;For mixed literal and LZ streams
 ;We need some way to specify how much data to extract
     ;Also some way to deal if it's mid LZ

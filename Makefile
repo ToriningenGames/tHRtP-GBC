@@ -2,6 +2,7 @@ MML=tools/MML6
 LZ=tools/LZify
 LZSPEC=tools/specfile.txt
 MAPCONV=tools/tiledmapconvert
+SCRUNCH=tools/scrunch
 
 LIB2=$(addprefix lib/,Extract.lib Tiledata.lib Tilemaps.lib)
 LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib)
@@ -38,7 +39,11 @@ lib/%.lib : src/%.asm dep/%.d | lib dep
 	true
 %.lzm : res/%.lzm
 	true
+%.lza : res/%.lza
+	true
 %.gbm : res/%.gbm
+	true
+%.atc : res/%.atc
 	true
 
 res/%.mcs : snd/%.mml $(MML) | res
@@ -49,6 +54,12 @@ res/%.lzt : tile/%.tile $(LZSPEC) | res
 
 res/%.lzm : res/%.gbm $(LZSPEC) | res
 	$(LZ) LZ77 $(LZSPEC) $< $@
+
+res/%.lza : res/%.atc $(LZSPEC) | res
+	$(LZ) LZ77 $(LZSPEC) $< $@
+
+res/%.atc : tile/%.attr | res
+	$(SCRUNCH) <$< >$@
 
 res/%.gbm : tile/%.tmj | res
 	$(MAPCONV) -p $< $@
