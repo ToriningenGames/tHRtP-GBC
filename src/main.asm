@@ -471,12 +471,22 @@ Start:
   DEC L
   JR nz,-
   PUSH BC
-    LD A,$7F  ;Transfer size: $800
+    LD A,$3F  ;Transfer size: $400
     LD DE,$8000
     LD HL,$D000
     CALL AddTransfer
     HALT
-    LD A,$7F
+    LD A,$3F
+    LD DE,$8400
+    LD HL,$D400
+    CALL AddTransfer
+    HALT
+    LD A,$3F  ;Transfer size: $400
+    LD DE,$8C00
+    LD HL,$DC00
+    CALL AddTransfer
+    HALT
+    LD A,$3F
     LD DE,$8800
     LD HL,$D800
     CALL AddTransfer
@@ -521,9 +531,14 @@ Start:
   POP HL
   DEC L
   JR nz,-
-  LD A,$7F
+  LD A,$3F
   LD DE,$9000
   LD HL,$D800
+  CALL AddTransfer
+  HALT
+  LD A,$3F
+  LD DE,$9400
+  LD HL,$DC00
   CALL AddTransfer
   HALT
 ;Run title screen
@@ -1278,38 +1293,6 @@ GameStartSaved:
   LD L,A
   LD H,L
   LD (HL),A
-  JP LoadLevel  ;test
-;Test the orb
-  LD A,%10001010
-  LDH (LCDC),A
-  LD HL,OAMData
-  LD A,64
-  LDI (HL),A
-  LD A,100
-  LDI (HL),A
-  LD A,1
-  LDI (HL),A
-  LD A,0
-  LDD (HL),A
-  LD B,15
-  LD A,1
--
-  HALT
-  DEC B
-  JR nz,-
-  INC A
-  CP 7
-  JR nz,+
-  ;Flip attributes
-  INC L
-  LD A,%01100000
-  XOR (HL)
-  LDD (HL),A
-  LD A,1
-+
-  LD (HL),A
-  LD B,3
-  JR -
 ;Fade to black
 LoadLevel:
   ;DEBUG:
