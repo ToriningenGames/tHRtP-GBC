@@ -289,19 +289,101 @@ DefaultGameSave:
 DefaultOptionsEnd:
 .ENDS
 
+.SECTION "DMG" FREE
+;Game won't run on a DMG; give unlucky players a music player instead.
+DMGMode:
+;System init
+;OAM routine
+  LD HL,OAMRoutine
+  LD B,OAMSize
+  LD C,OAMStart
+-
+  LDI A,(HL)
+  LDH (C),A
+  INC C
+  DEC B
+  JR nz,-
+;Begin music
+  LD HL,channelonebase+$2A
+  LD A,<Channel1Pitch
+  LDI (HL),A
+  LD (HL),>Channel1Pitch
+  LD HL,channeltwobase+$2A
+  LD A,<Channel2Pitch
+  LDI (HL),A
+  LD (HL),>Channel2Pitch
+  LD HL,channelthreebase+$2A
+  LD A,<Channel3Pitch
+  LDI (HL),A
+  LD (HL),>Channel3Pitch
+  LD HL,channelfourbase+$2A
+  LD A,<Channel4Pitch
+  LDI (HL),A
+  LD (HL),>Channel4Pitch
+  LD A,%11110011
+  LD (musicglobalbase+1),A
+;Start the player
+  LD A,1
+  LDH ($FF),A
+  EI
+  HALT
+  LD DE,Songs
+--
+  LD H,D
+  LD L,E
+  LDI A,(HL)
+  LD C,A
+  LD B,(HL)
+  CALL MusicLoad
+  LD C,$FF
+-
+  HALT
+  ;Get freshly released buttons
+  LDH A,(Buttons)
+  XOR C
+  LD B,A
+  CPL
+  OR C
+  CPL
+  ;Released left?
+  BIT 1,A
+  JR z,+
+  ;If we're at the first song, move to the last
+  LD A,<Songs
+  CP E
+  JR nz,++
+  LD DE,SongListRouteA
+++
+  DEC DE
+  DEC DE
+  JR --
++ ;Released right?
+  BIT 0,A
+  JR z,+
+  INC DE
+  INC DE
+  ;If we're at the last song, move to the first
+  LD A,<SongListRouteA
+  CP E
+  JR nz,--
+  LD DE,Songs
+  JR --
++ ;Prepare next frame buttons
+  LD A,B
+  XOR C
+  LD C,A
+  JR -
+.ENDS
+
 .SECTION "Init" FREE
 Start:
   LD SP,StackTop+1
 ;System check
   CP $11
-  JR z,++
-  ;Not GBC; annotate and error later
-  LD A,$FF
-  JR +
-++
+  JP nz,DMGMode   ;Not GBC; start up music player
   LD A,$01
   AND B
-  LD A,$80
+  LD A,$80  ;GBA palettes
   JR nz,+
   ;Use GBC palettes
   XOR A
