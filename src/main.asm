@@ -654,6 +654,10 @@ Start:
   LD DE,$0249
 -
   HALT
+  LDH A,(Buttons)
+  CPL
+  OR A
+  JR nz,+
   DEC E
   JR nz,-
   DEC D
@@ -675,6 +679,7 @@ Start:
   HALT
   DEC C
   JR nz,-
++
 ;Show the title
   LD A,%10000000
   LDH (LCDC),A
@@ -1400,6 +1405,7 @@ LoadLevel:
     JR -
 +
   ADD SP,ExtractSaveSize
+  HALT
   ;256 tiles...
   LD DE,$8800
   LD HL,$D600
@@ -1484,6 +1490,18 @@ LoadLevel:
   LD A,32
   LD HL,MapStage1Pal
   CALL AddPalette
+  LD A,1
+  RST $08
+  LD HL,$FF00|LCDC
+  SET 1,(HL)
+  CALL PlayerInit
+TestLoop:
+  HALT
+  CALL PlayerFrame
+  ;Handle Player
+  ;Handle Ball
+  ;Handle Collisions
+  JR TestLoop
   ;Standard Levels:
   ;Load the data
   ;Title characters flash in order, with a star between "hou" and "rei"

@@ -5,7 +5,7 @@ MAPCONV=tools/tiledmapconvert
 SCRUNCH=tools/scrunch
 
 LIB2=$(addprefix lib/,Extract.lib Tiledata.lib Tilemaps.lib)
-LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib)
+LIB1=$(addprefix lib/,Sound.lib Voicelist.lib Songs.lib Ram.lib Player.lib)
 OBJ=$(addprefix obj/,main.obj vBlank.obj Rand.obj)
 LINK=obj/Link.link
 INCS=-I inc -I res -I tile -I src

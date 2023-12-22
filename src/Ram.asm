@@ -20,7 +20,11 @@ difficulty db
 ;$C000 - $C0FF: Sound data
 .DEFINE OAMData         $C100 EXPORT
 .DEFINE XferQueue       $C1A0 EXPORT    ;18 of these 5 byte entries: $5A size
-;$C1FA - $C1FF: Mode specific variables
+.DEFINE PlayerState     $C1FA EXPORT
+.DEFINE PlayerTimer     $C1FB EXPORT
+.DEFINE PlayerNext      $C1FC EXPORT
+.DEFINE PlayerCurrDir   $C1FD EXPORT
+;$C1FE - $C1FF: Free
 .DEFINE PaletteUpdates  $C200 EXPORT    ;64 maximum, with overhead:  $80 size
 .DEFINE InitTemp        $C280 EXPORT    ;\ These two blend together
 .DEFINE StackTop        $CAFF EXPORT    ;/
