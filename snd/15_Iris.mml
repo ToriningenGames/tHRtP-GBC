@@ -1,6 +1,54 @@
+# Iris
+# Composer: ZUN
+# Arranger: Toriningen
+# Comments: You'd think this song is simple, but it's anything but! The lead is an octave-span that echoes (already hard to get sounding good), and the backing very importantly uses 2 voices.
+# Okay maybe I'm overblowing it.
+
 ^0
-X0 [:R1]
-X1 [:R1]
-X2 [:R1]
-X3 [:R1]
-X4 [:R1]
+
+@0 T128
+
+X0 @0 V$47
+[: H%10011001
+    R1.4 H%10110101
+    R1.24
+]0
+
+X1 @0 H0 V$60 S0 I2
+[: ^8 O5
+    B E G E A D F+ D <G> E G E F+ G >A B<
+    B E G E A D F+ D <G> E G E F+ D >A< G
+]0
+
+X2 @0
+R2     #Fall through
+X3 @0
+[0:0 O6 H0 V$F0 I2.4
+    R1.4
+    B2.3 A4 D16.3 A32 D32
+    B2.3 D2
+    D16 E16.15 B2 A4 D16.3 A32 D32
+    B1 A2 <G4 F+4
+    G1 >A16 B16.7 D2
+    E1 B2 A2
+    B1 D2 E4 F+4
+    G8.7 >A8
+    B2< G4 F+4 G1
+    F+2 D2 D8 E8 E4.7
+    G1 F+2 >A2<
+    D8 E8 E4.7
+]0
+
+X4 @0 O2
+[0:0
+    R1.4
+    [1:1
+        C8 C16 C16
+    ]63
+    [1:1
+        C+8 C16 C16
+        [2:2
+            C8 C16 C16
+        ]6
+    ]3
+]0

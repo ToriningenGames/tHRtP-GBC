@@ -24,11 +24,15 @@ difficulty db
 .DEFINE PlayerTimer     $C1FB EXPORT
 .DEFINE PlayerNext      $C1FC EXPORT
 .DEFINE PlayerCurrDir   $C1FD EXPORT
-;$C1FE - $C1FF: Free
+.DEFINE PlayerX         $C1FE EXPORT
+.DEFINE Player_         $C1FF EXPORT
 .DEFINE PaletteUpdates  $C200 EXPORT    ;64 maximum, with overhead:  $80 size
 .DEFINE InitTemp        $C280 EXPORT    ;\ These two blend together
 .DEFINE StackTop        $CAFF EXPORT    ;/
 .DEFINE MapTemp         $CB00 EXPORT    ;To end of bank
+
+;Critical sprites get dedicated OAM spots
+.DEFINE PlayerSprite    OAMData EXPORT
 
 ; Bank 0 RAM registers
 .DEFINE ExtractTemp     $D000 EXPORT

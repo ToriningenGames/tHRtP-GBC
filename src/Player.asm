@@ -18,12 +18,61 @@ ActMulti  DB
 
 .SECTION "Player" FREE
 
-;High nibble: Current action
-;Low nibble: Next action
-ActionsFree:
- .db $00
-ActionsEnd:
- .db $00
+;Anims
+  ;Sprite 0 Y
+  ;World to Sprite 0 X
+  ;Tile Sprite 0
+  ;Attrs Sprite 0
+  ;Ditto for Sprite 1
+PAStand:
+ .db $98,0,$20,%00000000
+ .db $98,0,$20,%00000000
+PAMove:
+ .db $98,-1,$22,%00000001
+ .db $98,0,$23,%00000000
+ .db $98,0,$22,%00000001
+ .db $98,0,$24,%00000000
+PAShoot:
+ .db $98,0,$21,%00000000
+ .db $98,0,$21,%00000000
+
+;Loads two sprites of data, accounting for player attributes
+;HL->Sprite Data
+;DE->OAM dest
+;Returns pointing to the next entry
+PlayerSpriteLoad:
+  SCF
+  PUSH AF
+    LDI A,(HL)
+    LD (DE),A
+    INC E
+    LD A,(PlayerCurrDir)
+    INC A
+    LD A,(PlayerX)
+    JR nz,+
+    CPL
+    INC A
++
+    ADD (HL)
+    ADD 4   ;Offset from sprite coords to world coords
+    LD (DE),A
+    INC E
+    INC HL
+    LDI A,(HL)
+    LD (DE),A
+    INC E
+    LD A,(PlayerCurrDir)
+    INC A
+    LDI A,(HL)
+    JR nz,+
+    XOR %00100000   ;Sprite X flip
++
+    LD (DE),A
+    INC E
+  POP AF
+  RET nc
+  CCF
+  JR PlayerSpriteLoad
 
 PlayerInit:
   LD HL,PlayerState
@@ -34,13 +83,13 @@ PlayerInit:
   LDI (HL),A
   LDI (HL),A
   LDI (HL),A
-  LD ($C103),A
+  LD HL,$C103
+  LDD (HL),A
   LD A,$20
-  LD ($C102),A
+  LDD (HL),A
   LD A,$54
-  LD ($C101),A
-  LD A,$98
-  LD ($C100),A
+  LDD (HL),A
+  LD (HL),$98
   RET
 PlayerFrame:
   ;Have the timer handy
@@ -110,7 +159,7 @@ PlayerStand:
   LD B,A
   AND %00001001
   XOR %00001001
-  JR z,PlayerBeginSlide
+  JP z,PlayerBeginSlide
   RR B
   JR c,PlayerBeginMove
   RR B
@@ -136,7 +185,8 @@ PlayerMove:
 +
   ADD (HL)
   LD (HL),A
-  ;...
+  ;Do actual movement logic here
+  ;Do animation logic here
   RET
 PlayerShoot:
   DEC C
@@ -152,7 +202,8 @@ PlayerSwing:
   JR c,PlayerBeginSlide
 +
   ;Cannot be interrupted; continue swinging
-  ;...
+  ;Do hitbox stuff here
+  ;Do animation logic here
   DEC C
   JR z,PlayerBeginStand
   RET
@@ -169,7 +220,8 @@ PlayerSlide:
 +
   ADD (HL)
   LD (HL),A
-  ;...
+  ;Do actual movement logic here
+  ;Do animation logic here
   RET
 PlayerPower:
   RET
@@ -183,6 +235,10 @@ PlayerMulti:
 PlayerBeginStand:
   LD HL,PlayerCurrDir
   LD (HL),0
+  ;Anim
+  LD DE,PlayerSprite
+  LD HL,PAStand
+  CALL PlayerSpriteLoad
   LD BC,ActStand*256
   JR PlayerBeginCommon
 PlayerBeginMove:
@@ -196,6 +252,7 @@ PlayerBeginMove:
   LD BC,ActMove*256
   JR PlayerBeginCommon
 PlayerBeginShoot:
+  ;Anim here
   LD BC,ActShoot*256+2
   JR PlayerBeginCommon
 PlayerBeginSwing:
